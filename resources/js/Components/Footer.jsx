@@ -11,7 +11,7 @@ import {
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6 pb-8 pt-16">
         {/* Footer Top */}
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           {/* Logo dan Deskripsi */}

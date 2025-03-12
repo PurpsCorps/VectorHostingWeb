@@ -10,8 +10,8 @@ const Navbar = () => {
               Vector<span className="text-blue-500">Hosting</span>
             </div>
             <div className="flex items-center space-x-6">
+              <Link to="/" className="hover:text-blue-500 transition">Home</Link>
               <Link to="/product" className="hover:text-blue-500 transition">Product</Link>
-              <a href="#" className="hover:text-blue-500 transition">Fitur</a>
               <a href="#" className="hover:text-blue-500 transition">Kontak</a>
               <a href="/client" className="bg-blue-600 px-4 py-2 rounded-full hover:bg-blue-700 transition">
                 Client Panel
