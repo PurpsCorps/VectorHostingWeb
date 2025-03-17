@@ -7,6 +7,8 @@ import { createRoot } from 'react-dom/client';
 import LandingPage from './Pages/LandingPage';
 import ProductListPage from './Pages/ProductListPage';
 import Navbar from './Pages/Navbar';
+import LoginPage from './Pages/LoginPage';
+import NotFoundPage from './Pages/NotFoundPage';
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
@@ -19,6 +21,8 @@ if (rootElement) {
                 <Route path="/" element={<Navbar />}>
                     <Route index element={<LandingPage />} />
                     <Route path="product" element={<ProductListPage />} />
+                    <Route path="login" element={<LoginPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

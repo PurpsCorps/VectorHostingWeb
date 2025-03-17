@@ -5,67 +5,6 @@ import ProductShow from '@/Components/ProductShow';
 const ProductListPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const products = [
-    {
-      id: 1,
-      name: "Laptop Ultrabook Pro",
-      category: "electronics",
-      price: 12999000,
-      image: "/api/placeholder/200/150",
-      description: "Laptop premium dengan performa tinggi dan desain tipis",
-      isRecommended: true
-    },
-    {
-      id: 2,
-      name: "Smartphone NextGen",
-      category: "electronics",
-      price: 8499000,
-      image: "/api/placeholder/200/150",
-      description: "Smartphone dengan kamera terbaik dan baterai tahan lama",
-      isRecommended: false
-    },
-    {
-      id: 3,
-      name: "Headphone Wireless",
-      category: "electronics",
-      price: 1899000,
-      image: "/api/placeholder/200/150",
-      description: "Headphone dengan noise cancelling dan kualitas suara premium",
-      isRecommended: false
-    },
-    {
-      id: 4,
-      name: "Sepatu Olahraga Pro",
-      category: "fashion",
-      price: 899000,
-      image: "/api/placeholder/200/150",
-      description: "Sepatu olahraga berkualitas tinggi untuk aktivitas harian",
-      isRecommended: true
-    },
-    {
-      id: 5,
-      name: "Tas Ransel Premium",
-      category: "fashion",
-      price: 750000,
-      image: "/api/placeholder/200/150",
-      description: "Tas ransel tahan air dengan banyak kompartemen",
-      isRecommended: false
-    },
-    {
-      id: 6,
-      name: "Blender Multifungsi",
-      category: "home",
-      price: 599000,
-      image: "/api/placeholder/200/150",
-      description: "Blender dengan berbagai fungsi untuk kebutuhan dapur",
-      isRecommended: true
-    }
-  ];
-
-  const filteredProducts = activeCategory === 'all'
-    ? products
-    : products.filter(product => product.category === activeCategory && product.show === 1);
-
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
