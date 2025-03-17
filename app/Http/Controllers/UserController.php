@@ -30,7 +30,8 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = User::findOrFail($id);
+        return response()->json($data);
     }
 
     /**
@@ -38,7 +39,37 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            // Cari user berdasarkan ID
+            $user = User::findOrFail($id);
+
+            // Validasi input
+            $request->validate([
+                'token' => 'required|string'
+            ]);
+
+            // Update hanya kolom token
+            $user->token = $request->token;
+            $user->save();
+
+            // Kembalikan response sukses
+            return response()->json([
+                'success' => true,
+                'message' => 'Token berhasil diperbarui',
+                'data' => $user
+            ], 200);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

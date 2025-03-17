@@ -67,14 +67,15 @@ const LoginPage = () => {
 
             if (isPasswordValid) {
                 // Successful login
-                console.log('Login successful', user);
+                let tokens = token();
+                await axios.patch('http://VectorHosting.test/api/user/'+ user.id, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
 
                 // Store user info in sessionStorage or context/redux
                 sessionStorage.setItem('user', JSON.stringify({
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    loginToken: token(),
+                    loginToken: tokens,
                 }));
 
                 // Redirect to dashboard or home
