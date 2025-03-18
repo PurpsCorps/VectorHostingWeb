@@ -69,7 +69,9 @@ const LoginPage = () => {
                 // Successful login
                 let tokens = token();
                 await axios.patch('http://VectorHosting.test/api/user/'+ user.id, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
-
+                if(sessionStorage.getItem('user')) {
+                    sessionStorage.removeItem('user');
+                }
                 // Store user info in sessionStorage or context/redux
                 sessionStorage.setItem('user', JSON.stringify({
                     id: user.id,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, AlertTriangle, Search } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 const NotFoundPage = () => {
   return (
@@ -44,13 +45,12 @@ const NotFoundPage = () => {
           {/* Error Card */}
           <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-8 border border-gray-800/80 shadow-xl shadow-blue-900/20">
             {/* Action Button */}
-            <button
-              onClick={() => window.location.href = '/'}
+            <Link to="/"
               className="w-full bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 py-3 px-4 rounded-lg text-white font-medium flex items-center justify-center hover:from-blue-700 hover:to-indigo-700 transition transform hover:scale-[1.02] shadow-lg shadow-blue-700/30"
             >
               <Home className="mr-2" size={18} />
               Back to Homepage
-            </button>
+            </Link>
 
             {/* Quick Links */}
             <div className="mt-6 border-t border-gray-800/50">

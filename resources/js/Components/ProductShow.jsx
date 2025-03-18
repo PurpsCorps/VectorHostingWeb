@@ -14,6 +14,8 @@ const ProductShow = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,6 +65,107 @@ const ProductShow = (props) => {
         }
     };
 
+    // Add this function to your ProductShow component
+
+    const addCart = async (productId, quantity = 1) => {
+        try {
+            let baru = false;
+        // First check if the product is already in the cart
+            const userSession = sessionStorage.getItem('user');
+            const Userdata = JSON.parse(userSession);
+            if (!userSession) {
+                window.location.href = '/login';
+                throw new Error('Silahkan login terlebih dahulu!');
+            }
+            const response = await axios.get('http://VectorHosting.test/api/cart/'+Userdata.id, {
+                headers: {
+                'X-Requested': import.meta.env.VITE_API_KEY
+                }
+            });
+
+            if (response.data == 0) {
+                baru = true;
+            }
+
+            let currentCart = response.data.cart || [];
+
+            if (typeof currentCart === 'string') {
+                try {
+                    currentCart = JSON.parse(currentCart);
+                } catch (e) {
+                    currentCart = [];
+                }
+            }
+
+            if (!Array.isArray(currentCart)) {
+                currentCart = [];
+            }
+
+            // Check if product is already in cart
+            const existingProductIndex = currentCart.findIndex(item => item.product_id === productId);
+
+            if (existingProductIndex >= 0) {
+                // Product exists, update quantity
+                currentCart[existingProductIndex].qty += quantity;
+            } else {
+                // Product doesn't exist, add new item
+                currentCart.push({
+                    "qty": quantity,
+                    "product_id": productId
+                });
+            }
+
+            // Update the cart on the server
+            if (baru) {
+                const updateResponse = await axios.post('http://VectorHosting.test/api/cart/', {
+                    user_id: Userdata.id,
+                    cart: JSON.stringify(currentCart),
+                    count: currentCart.length
+                }, {
+                    headers: {
+                        'X-Requested': import.meta.env.VITE_API_KEY
+                    }
+                });
+
+                if (updateResponse.status === 200) {
+                    setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
+                    setShowNotification(true);
+                    setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
+                    return true;
+                } else {
+                    throw new Error('Failed to update cart');
+                }
+            } else {
+                const updateResponse = await axios.patch('http://VectorHosting.test/api/cart/'+Userdata.id, {
+                    cart: JSON.stringify(currentCart),
+                    count: currentCart.length
+                }, {
+                    headers: {
+                        'X-Requested': import.meta.env.VITE_API_KEY
+                    }
+                });
+
+                if (updateResponse.status === 200) {
+                    setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
+                    setShowNotification(true);
+                    setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
+                    return true;
+                } else {
+                    throw new Error('Failed to update cart');
+                }
+            }
+
+
+            // Handle success
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            setNotificationMessage('Gagal menambahkan produk ke keranjang');
+            setShowNotification(true);
+            setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
+            return false;
+        }
+    };
+
     if (loading) return <div className="text-center">
         <div role="status">
             <svg aria-hidden="true" className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -83,7 +186,18 @@ const ProductShow = (props) => {
     }
 
     return (
+
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {showNotification && (
+                <div className="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded-md shadow-lg flex items-center z-20">
+                    {notificationMessage.includes('berhasil') ? (
+                    <Check className="h-5 w-5 mr-2 text-green-500" />
+                    ) : (
+                    <AlignCenter className="h-5 w-5 mr-2 text-red-500" />
+                    )}
+                    {notificationMessage}
+                </div>
+            )}
             {filteredProducts.map((product) => (
                 <div key={product.id} className="relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 group transform transition duration-300 hover:-translate-y-2 hover:shadow-lg hover:shadow-blue-900/20">
                 {product.recommended
@@ -94,7 +208,7 @@ const ProductShow = (props) => {
                 }
                 <div className="relative overflow-hidden">
                     <img
-                    src={import.meta.env.VITE_URL + '/storage/' + product.image}
+                    src={product.image? import.meta.env.VITE_URL + '/storage/' + product.image : 'https://placehold.co/600x400'}
                     alt={product.name}
                     className="w-full h-48 object-cover transform transition-transform duration-300 group-hover:scale-105"
                     />
@@ -107,9 +221,12 @@ const ProductShow = (props) => {
                     <span className="text-2xl font-bold text-blue-400">Rp{product.price.toLocaleString()}</span>
                     </div>
                     <div className="flex space-x-2">
-                    <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300 flex items-center justify-center group-hover:bg-blue-500">
+                    <button
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300 flex items-center justify-center group-hover:bg-blue-500"
+                        onClick={() => addCart(product.id, 1)}
+                    >
                         <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
                         Tambah ke Keranjang
                     </button>

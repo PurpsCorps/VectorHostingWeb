@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductDataController;
@@ -11,3 +12,4 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('product', ProductDataController::class)->middleware('auth.session');
 Route::apiResource('user', UserController::class)->middleware('auth.session');
+Route::apiResource('cart', CartController::class)->middleware('auth.session');
