@@ -18,7 +18,7 @@ const ProductPage = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://VectorHosting.test/api/product/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                const response = await axios.get('/api/product/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 // Parse the spek JSON string into an actual array for each item
                 const parsedData = response.data.map(item => ({
                     ...item,

@@ -22,7 +22,41 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            // Validasi input
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string',
+                'phone_number' => 'required|string',
+                'avatar' => 'required|string'
+            ]);
+
+            // Hash password
+            $validatedData['password'] = bcrypt($validatedData['password']);
+
+            // Buat user baru
+            $user = User::create($validatedData);
+
+            // Kembalikan response sukses
+            return response()->json([
+                'success' => true,
+                'message' => 'User berhasil dibuat',
+                'data' => $user
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

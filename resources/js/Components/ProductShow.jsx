@@ -20,7 +20,7 @@ const ProductShow = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://VectorHosting.test/api/product/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                const response = await axios.get('/api/product/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 // Parse the spek JSON string into an actual array for each item
                 const parsedData = response.data.map(item => ({
                     ...item,
@@ -75,9 +75,9 @@ const ProductShow = (props) => {
             const Userdata = JSON.parse(userSession);
             if (!userSession) {
                 window.location.href = '/login';
-                throw new Error('Silahkan login terlebih dahulu!');
+                return false;
             }
-            const response = await axios.get('http://VectorHosting.test/api/cart/'+Userdata.id, {
+            const response = await axios.get('/api/cart/'+Userdata.id, {
                 headers: {
                 'X-Requested': import.meta.env.VITE_API_KEY
                 }
@@ -117,7 +117,7 @@ const ProductShow = (props) => {
 
             // Update the cart on the server
             if (baru) {
-                const updateResponse = await axios.post('http://VectorHosting.test/api/cart/', {
+                const updateResponse = await axios.post('/api/cart/', {
                     user_id: Userdata.id,
                     cart: JSON.stringify(currentCart),
                     count: currentCart.length
@@ -127,7 +127,7 @@ const ProductShow = (props) => {
                     }
                 });
 
-                if (updateResponse.status === 200) {
+                if (updateResponse.status === 201) {
                     setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
                     setShowNotification(true);
                     setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds

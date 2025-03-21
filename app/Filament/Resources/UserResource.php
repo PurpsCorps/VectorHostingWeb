@@ -17,7 +17,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
 
     protected static ?string $navigationGroup = 'User Management';
 
@@ -37,7 +37,18 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
+                Forms\Components\TextInput::make('saldo')
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->required(),
+                Forms\Components\Select::make('is_admin')
+                    ->label('Admin')
+                    ->options([
+                        1 => 'True',
+                        0 => 'False',
+                    ])
+                    ->required()
+                    ->native(false),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
@@ -49,13 +60,20 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('avatar'),
+                Tables\Columns\ImageColumn::make('avatar')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('saldo')
+                    ->numeric(
+                        thousandsSeparator: '.'
+                    )
+                    ->prefix('Rp ')
+                    ->sortable(),
+                Tables\Columns\BooleanColumn::make('is_admin')
+                    ->label('Admin')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

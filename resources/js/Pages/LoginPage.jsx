@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, AlertCircle, Phone, Code, Check } from 'lucide-react';
 import axios from 'axios';
 import bcrypt from 'bcryptjs'; // You'll need to install this package
 
 const LoginPage = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
+    const [nohp, setNohp] = useState('');
+    const [tokeninpt, setTokeninpt] = useState('');
+    const [ctoken, setCtoken] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [sukses, setSukses] = useState('');
+
+    var tokenphone = function() {
+        return Math.floor(Math.random() * 10).toString();
+    };
 
     var rand = function() {
         return Math.random().toString(36).substr(2); // remove `0.`
@@ -24,7 +32,7 @@ const LoginPage = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://VectorHosting.test/api/user/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                const response = await axios.get('/api/user/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 setUsers(response.data);
             } catch (err) {
                 console.error('Error fetching user data:', err);
@@ -38,15 +46,18 @@ const LoginPage = () => {
         setIsLogin(!isLogin);
         // Clear form fields and errors when switching forms
         setEmail('');
+        setNohp('');
         setPassword('');
         setUsername('');
         setError('');
+        setSukses('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
+        setSukses('');
 
         try {
         if (isLogin) {
@@ -68,7 +79,7 @@ const LoginPage = () => {
             if (isPasswordValid) {
                 // Successful login
                 let tokens = token();
-                await axios.patch('http://VectorHosting.test/api/user/'+ user.id, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                await axios.patch('/api/user/'+ user.id, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 if(sessionStorage.getItem('user')) {
                     sessionStorage.removeItem('user');
                 }
@@ -94,26 +105,34 @@ const LoginPage = () => {
 
             if (existingUser) {
                 setError('Username or email already exists');
-            } else {
+            } else if (!ctoken) {
+                let tokens = tokenphone() + tokenphone() + tokenphone() + tokenphone();
+                setCtoken(tokens);
+                setSukses('Silahkan Cek WhatsApp Anda dan Masukan Token yang diberikan!');
+                await axios.patch('/api/token/'+nohp, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 // In a real implementation, you would hash the password before sending
-                const hashedPassword = await bcrypt.hash(password, 10);
-
+            } else if(ctoken == tokeninpt) {
                 // Create a new user object matching the API structure
                 const newUser = {
                     name: username,
                     email: email,
-                    password: hashedPassword, // In production, use hashedPassword
+                    phone_number: nohp,
+                    password: password, // In production, use hashedPassword
                     email_verified_at: null,
+                    avatar: '01JPJ723HVRK8M28Z06J1GDHYB.png',
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 };
 
                 // Here you would make a POST request to register
-                // await axios.post('APITEST', newUser);
+                await axios.post('/api/user', newUser, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
 
-                console.log('Registration data:', newUser);
-                alert('Registration successful! Please login.');
-                setIsLogin(true);
+                setSukses('Registrasi Sukses.<br>Silahkan Login!');
+                setTimeout(() => setSukses(''), 5000);
+                setCtoken('');
+                window.location.href = '/login';
+            } else {
+                setError('Token Salah!');
             }
         }
         } catch (err) {
@@ -144,6 +163,13 @@ const LoginPage = () => {
                 }}>
             </div>
         </div>
+
+        {sukses && (
+            <div className="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded-md shadow-lg flex items-center z-20">
+                <Check className="h-5 w-5 mr-2 text-green-500" />
+                {sukses}
+            </div>
+        )}
 
         <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-md mx-auto">
@@ -225,6 +251,37 @@ const LoginPage = () => {
                         />
                         </div>
                     </div>
+                    {!isLogin && (
+                    <div className="mb-4">
+                        <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
+                        <Phone className="text-blue-400 mr-2" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Nomor HP"
+                            className="bg-transparent border-none outline-none w-full text-white"
+                            value={nohp}
+                            onChange={(e) => setNohp(e.target.value)}
+                            required
+                        />
+                        </div>
+                    </div>
+                )}
+
+                {ctoken && (
+                    <div className="mb-4">
+                        <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
+                        <Code className="text-blue-400 mr-2" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Token"
+                            className="bg-transparent border-none outline-none w-full text-white"
+                            value={tokeninpt}
+                            onChange={(e) => setTokeninpt(e.target.value)}
+                            required
+                        />
+                        </div>
+                    </div>
+                )}
 
                 {/* Password Field */}
                 <div className="mb-6">

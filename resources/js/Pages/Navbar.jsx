@@ -18,7 +18,7 @@ const Navbar = () => {
       if (userSession) {
         try {
           const userFromSession = JSON.parse(userSession);
-          const response = await axios.get('http://VectorHosting.test/api/user/'+userFromSession.id, {
+          const response = await axios.get('/api/user/'+userFromSession.id, {
             headers: {'X-Requested': import.meta.env.VITE_API_KEY}
           });
 
@@ -38,10 +38,10 @@ const Navbar = () => {
     checkUserSession();
   }, []);
 
-  // Function to fetch cart count for logged in user
+  // Function to fetch cart count for logged in use
   const fetchCartCount = async (userId) => {
     try {
-      const response = await axios.get(`http://VectorHosting.test/api/cart/${userId}`, {
+      const response = await axios.get(`/api/cart/${userId}`, {
         headers: {'X-Requested': import.meta.env.VITE_API_KEY}
       });
       setCartCount(response.data.count || 0);
@@ -128,6 +128,9 @@ const Navbar = () => {
                       <p className="text-sm font-medium">{users.name || 'User'}</p>
                       <p className="text-xs text-gray-500">{users.email || ''}</p>
                     </div>
+                    <div className="px-4 py-2 border-b border-gray-200">
+                      <p className="text-sm font-medium">{"Rp. "+users.saldo || ''}</p>
+                    </div>
                     <Link to="/client" className="block px-4 py-2 text-sm hover:bg-gray-800">
                       Client Panel
                     </Link>
@@ -165,4 +168,4 @@ const Navbar = () => {
   );
 };
 
-export default {Navbar};
+export default Navbar;
