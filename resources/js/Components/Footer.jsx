@@ -45,8 +45,6 @@ const Footer = () => {
               {[
                 'Shared Hosting',
                 'VPS Hosting',
-                'Domain',
-                'Email Hosting',
                 'Cloud Hosting'
               ].map((service, index) => (
                 <li key={index}>
@@ -67,9 +65,7 @@ const Footer = () => {
             <ul className="space-y-4">
               {[
                 'Tentang Vector Hosting',
-                'Karir',
                 'Tim Kami',
-                'Artikel',
                 'Kontak'
               ].map((item, index) => (
                 <li key={index}>

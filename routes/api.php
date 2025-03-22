@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductDataController;
@@ -15,3 +16,4 @@ Route::apiResource('product', ProductDataController::class)->middleware('auth.se
 Route::apiResource('user', UserController::class)->middleware('auth.session');
 Route::apiResource('cart', CartController::class)->middleware('auth.session');
 Route::apiResource('token', TokenController::class)->middleware('auth.session');
+Route::apiResource('order', OrderController::class)->middleware('auth.session');

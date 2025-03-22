@@ -67,12 +67,16 @@ class CartController extends Controller
             // Validasi input
             $request->validate([
                 'cart' => 'required',
-                'count' => 'required|integer',
+                'count' => 'integer',
             ]);
 
             // Update hanya kolom token
             $user->cart = $request->cart;
-            $user->count = $request->count;
+            if($request->order) {
+                $user->count = 0;
+            } else {
+                $request->count? $user->count = $request->count : $user->count = $user->count;
+            }
             $user->save();
 
             // Kembalikan response sukses

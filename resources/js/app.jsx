@@ -9,7 +9,7 @@ import ProductListPage from './Pages/ProductListPage';
 import Navbar from './Pages/Navbar';
 import LoginPage from './Pages/LoginPage';
 import NotFoundPage from './Pages/NotFoundPage';
-import CartPage from './Pages/CartPage';
+import CartCheckoutPage from './Pages/CartCheckoutPage';
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
@@ -23,7 +23,7 @@ if (rootElement) {
                     <Route index element={<LandingPage />} />
                     <Route path="product" element={<ProductListPage />} />
                     <Route path="login" element={<LoginPage />} />
-                    <Route path="cart" element={<CartPage />} />
+                    <Route path="cart" element={<CartCheckoutPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
