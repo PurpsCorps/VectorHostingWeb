@@ -29,6 +29,7 @@ class OrderController extends Controller
                 'subtotal' => 'required|integer',
                 'total' => 'required|integer',
                 'status' => 'required|string',
+                'payment_proof' => 'required|string',
             ]);
 
             $data = Order::create($validatedData);

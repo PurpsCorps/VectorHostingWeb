@@ -15,6 +15,7 @@ class Order extends Model
         'payment_method',
         'total',
         'subtotal',
-        'status'
+        'status',
+        'payment_proof'
     ];
 }

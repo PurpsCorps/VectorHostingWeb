@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentProofController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductDataController;
@@ -17,3 +18,4 @@ Route::apiResource('user', UserController::class)->middleware('auth.session');
 Route::apiResource('cart', CartController::class)->middleware('auth.session');
 Route::apiResource('token', TokenController::class)->middleware('auth.session');
 Route::apiResource('order', OrderController::class)->middleware('auth.session');
+Route::apiResource('payment/proof', PaymentProofController::class)->middleware('auth.session');
