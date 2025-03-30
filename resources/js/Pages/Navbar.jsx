@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { useCart } from './CartContext';  // Import the hook
 
 const Navbar = () => {
   const [users, setUsers] = useState();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [cartCount, setCartCount] = useState(0);
+  const { cartCount, updateCartCount } = useCart();  // Use context
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -47,10 +48,10 @@ const Navbar = () => {
       const response = await axios.get(`/api/cart/${userId}/`, {
         headers: {'X-Requested': import.meta.env.VITE_API_KEY}
       });
-      setCartCount(response.data.count || 0);
+      updateCartCount(response.data.count || 0);  // Update context
     } catch (err) {
       console.error('Error fetching cart count:', err);
-      setCartCount(0);
+      updateCartCount(0);
     }
   };
 
@@ -82,7 +83,7 @@ const Navbar = () => {
     sessionStorage.removeItem('user');
     setUsers(null);
     setShowDropdown(false);
-    setCartCount(0);
+    updateCartCount(0);;
     setMobileMenuOpen(false);
     navigate('/login');
   };
@@ -161,11 +162,11 @@ const Navbar = () => {
                     <Link to="/client" className="block px-4 py-2 text-sm hover:bg-gray-800">
                       Client Panel
                     </Link>
-                    {users.is_admin ? (
-                    <a href="/admin" className="block px-4 py-2 text-sm hover:bg-gray-800">
-                      Admin Area
+                    {users.is_admin && (
+                      <a href="/admin" className="block px-4 py-2 text-sm hover:bg-gray-800">
+                        Admin Area
                       </a>
-                    ): ''}
+                    )}
                     <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-gray-800">
                       Profile Settings
                     </Link>

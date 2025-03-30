@@ -27,9 +27,9 @@ const ProductListPage = () => {
         </div>
       </section>
 
-      {/* Product Categories - positioned to overlap with the wave */}
-      <div className="max-w-6xl mx-auto px-4 mb-8 relative z-10">
-        <div className="flex justify-center space-x-4 overflow-x-auto py-4">
+      {/* Product Categories - Updated for better responsiveness */}
+      <div className="w-full max-w-6xl mx-auto px-4 mb-8 relative z-10">
+        <div className="flex flex-wrap justify-center gap-3 py-4 sm:flex-nowrap sm:overflow-x-auto sm:justify-start sm:space-x-4 sm:gap-0 md:justify-center">
           <button
             className={`px-6 py-2 rounded-full whitespace-nowrap ${
               activeCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'

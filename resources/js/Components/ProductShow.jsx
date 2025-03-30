@@ -9,8 +9,10 @@ import {
   AlignCenter
 } from 'lucide-react';
 import axios from 'axios';
+import { useCart } from '../Pages/CartContext';  // Import the hook
 
 const ProductShow = (props) => {
+    const { updateCartCount } = useCart();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -83,6 +85,8 @@ const ProductShow = (props) => {
                 }
             });
 
+            updateCartCount(response.data.count || 0);
+
             if (response.data == 0) {
                 baru = true;
             }
@@ -129,7 +133,7 @@ const ProductShow = (props) => {
 
                 if (updateResponse.status === 201) {
                     setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
-                    // setCartCount(currentCart.length);
+                    updateCartCount(currentCart.length || 0);
                     setShowNotification(true);
                     setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
                     return true;
@@ -149,7 +153,7 @@ const ProductShow = (props) => {
                 if (updateResponse.status === 200) {
                     setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
                     setShowNotification(true);
-                    // setCartCount(currentCart.length);
+                    updateCartCount(currentCart.length || 0);
                     setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
                     return true;
                 } else {

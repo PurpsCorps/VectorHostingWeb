@@ -9,11 +9,13 @@ import {
   AlignCenter
 } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ProductPage = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,6 +63,10 @@ const ProductPage = (props) => {
             console.error('Error parsing spek data:', error);
             return [];
         }
+    };
+
+    const handleSelectPackage = () => {
+        navigate('/product');
     };
 
     if (loading) return <div className="text-center">
@@ -119,7 +125,10 @@ const ProductPage = (props) => {
                         <li className="text-gray-300">No specifications available</li>
                     )}
                 </ul>
-                <button className="w-full bg-blue-600 py-3 rounded-full hover:bg-blue-700 transition">
+                <button
+                    className="w-full bg-blue-600 py-3 rounded-full hover:bg-blue-700 transition"
+                    onClick={handleSelectPackage}
+                >
                     Pilih Paket <ChevronRight className="inline ml-2" size={20} />
                 </button>
                 </div>
