@@ -10,6 +10,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const mobileButtonRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,10 +56,18 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Only close dropdown if clicking outside of dropdown AND outside of button
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+
+      // Only close mobile menu if clicking outside both the menu AND the mobile button
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        mobileButtonRef.current &&
+        !mobileButtonRef.current.contains(event.target)
+      ) {
         setMobileMenuOpen(false);
       }
     };
@@ -76,6 +85,16 @@ const Navbar = () => {
     setCartCount(0);
     setMobileMenuOpen(false);
     navigate('/login');
+  };
+
+  // Function to toggle mobile menu
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  // Function to close mobile menu
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   // Default profile image if user has no avatar
@@ -184,7 +203,8 @@ const Navbar = () => {
               </Link>
             )}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              ref={mobileButtonRef}
+              onClick={toggleMobileMenu}
               className="text-white focus:outline-none"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -208,21 +228,21 @@ const Navbar = () => {
               <Link
                 to="/"
                 className="hover:text-blue-500 transition"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 Home
               </Link>
               <Link
                 to="/product"
                 className="hover:text-blue-500 transition"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 Product
               </Link>
               <Link
                 to="/about-us"
                 className="hover:text-blue-500 transition"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
               >
                 About Us
               </Link>
@@ -250,7 +270,7 @@ const Navbar = () => {
                   <Link
                     to="/client"
                     className="hover:text-blue-500 transition"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                   >
                     Client Panel
                   </Link>
@@ -258,7 +278,7 @@ const Navbar = () => {
                     <a
                       href="/admin"
                       className="hover:text-blue-500 transition"
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={closeMobileMenu}
                     >
                       Admin Area
                     </a>
@@ -266,7 +286,7 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     className="hover:text-blue-500 transition"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={closeMobileMenu}
                   >
                     Profile Settings
                   </Link>
@@ -281,7 +301,7 @@ const Navbar = () => {
                 <a
                   href="/login"
                   className="bg-blue-600 px-4 py-2 text-center rounded-full hover:bg-blue-700 transition"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                 >
                   Login
                 </a>
