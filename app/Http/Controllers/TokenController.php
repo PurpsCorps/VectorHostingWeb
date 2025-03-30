@@ -48,7 +48,8 @@ class TokenController extends Controller
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => array(
         'target' => $id,
-        'message' => 'Token Vector Hosting Kamu adalah: ' . $request->token
+        'message' => 'Token Vector Hosting Kamu adalah:
+' . $request->token
         ),
         CURLOPT_HTTPHEADER => array(
             'Authorization: ' . env('WA_TOKEN') //change TOKEN to your actual token

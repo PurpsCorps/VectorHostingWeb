@@ -77,7 +77,7 @@ const ProductShow = (props) => {
                 window.location.href = '/login';
                 return false;
             }
-            const response = await axios.get('/api/cart/'+Userdata.id, {
+            const response = await axios.get(`/api/cart/${Userdata.id}/`, {
                 headers: {
                 'X-Requested': import.meta.env.VITE_API_KEY
                 }
@@ -117,7 +117,7 @@ const ProductShow = (props) => {
 
             // Update the cart on the server
             if (baru) {
-                const updateResponse = await axios.post('/api/cart/', {
+                const updateResponse = await axios.post('/api/cart', {
                     user_id: Userdata.id,
                     cart: JSON.stringify(currentCart),
                     count: currentCart.length
@@ -129,6 +129,7 @@ const ProductShow = (props) => {
 
                 if (updateResponse.status === 201) {
                     setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
+                    // setCartCount(currentCart.length);
                     setShowNotification(true);
                     setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
                     return true;
@@ -136,7 +137,7 @@ const ProductShow = (props) => {
                     throw new Error('Failed to update cart');
                 }
             } else {
-                const updateResponse = await axios.patch('http://VectorHosting.test/api/cart/'+Userdata.id, {
+                const updateResponse = await axios.patch('/api/cart/'+Userdata.id, {
                     cart: JSON.stringify(currentCart),
                     count: currentCart.length
                 }, {
@@ -148,6 +149,7 @@ const ProductShow = (props) => {
                 if (updateResponse.status === 200) {
                     setNotificationMessage('Produk berhasil ditambahkan ke keranjang');
                     setShowNotification(true);
+                    // setCartCount(currentCart.length);
                     setTimeout(() => setShowNotification(false), 3000); // Hide after 3 seconds
                     return true;
                 } else {

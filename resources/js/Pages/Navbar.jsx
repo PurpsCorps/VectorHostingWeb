@@ -7,7 +7,9 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [cartCount, setCartCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +20,7 @@ const Navbar = () => {
       if (userSession) {
         try {
           const userFromSession = JSON.parse(userSession);
-          const response = await axios.get('/api/user/'+userFromSession.id, {
+          const response = await axios.get(`/api/user/${userFromSession.id}/`, {
             headers: {'X-Requested': import.meta.env.VITE_API_KEY}
           });
 
@@ -41,7 +43,7 @@ const Navbar = () => {
   // Function to fetch cart count for logged in use
   const fetchCartCount = async (userId) => {
     try {
-      const response = await axios.get(`/api/cart/${userId}`, {
+      const response = await axios.get(`/api/cart/${userId}/`, {
         headers: {'X-Requested': import.meta.env.VITE_API_KEY}
       });
       setCartCount(response.data.count || 0);
@@ -56,6 +58,9 @@ const Navbar = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setMobileMenuOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -69,6 +74,7 @@ const Navbar = () => {
     setUsers(null);
     setShowDropdown(false);
     setCartCount(0);
+    setMobileMenuOpen(false);
     navigate('/login');
   };
 
@@ -84,10 +90,12 @@ const Navbar = () => {
               Vector<span className="text-blue-500">Hosting</span>
             </div>
           </Link>
-          <div className="flex items-center space-x-6">
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="hover:text-blue-500 transition">Home</Link>
             <Link to="/product" className="hover:text-blue-500 transition">Product</Link>
-            <a href="#" className="hover:text-blue-500 transition">Kontak</a>
+            <Link to="/about-us" className="hover:text-blue-500 transition">About Us</Link>
 
             {/* Shopping Cart Icon - Only show when logged in */}
             {!isLoading && users ? (
@@ -160,7 +168,127 @@ const Navbar = () => {
               </a>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            {!isLoading && users && (
+              <Link to="/cart" className="relative mr-4 hover:text-blue-500 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-white focus:outline-none"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div
+            ref={mobileMenuRef}
+            className="md:hidden bg-gray-900 py-4 px-6 shadow-lg"
+          >
+            <div className="flex flex-col space-y-4">
+              <Link
+                to="/"
+                className="hover:text-blue-500 transition"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                to="/product"
+                className="hover:text-blue-500 transition"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Product
+              </Link>
+              <Link
+                to="/about-us"
+                className="hover:text-blue-500 transition"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About Us
+              </Link>
+
+              {isLoading ? (
+                <div className="w-full py-2 bg-gray-800 animate-pulse rounded-md"></div>
+              ) : users ? (
+                <>
+                  <div className="flex items-center space-x-3 py-2 border-t border-gray-800">
+                    <img
+                      src={users.avatar ? `${import.meta.env.VITE_URL}/storage/${users.avatar}` : defaultAvatar}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border-2 border-blue-500"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = defaultAvatar;
+                      }}
+                    />
+                    <div>
+                      <p className="text-sm font-medium">{users.name || 'User'}</p>
+                      <p className="text-xs text-gray-500">{users.email || ''}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium">{"Rp. "+users.saldo || ''}</p>
+                  <Link
+                    to="/client"
+                    className="hover:text-blue-500 transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Client Panel
+                  </Link>
+                  {users.is_admin && (
+                    <a
+                      href="/admin"
+                      className="hover:text-blue-500 transition"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Admin Area
+                    </a>
+                  )}
+                  <Link
+                    to="/profile"
+                    className="hover:text-blue-500 transition"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Profile Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-left text-red-600 hover:text-red-400 transition"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <a
+                  href="/login"
+                  className="bg-blue-600 px-4 py-2 text-center rounded-full hover:bg-blue-700 transition"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </a>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       <Outlet />

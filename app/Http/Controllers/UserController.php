@@ -29,7 +29,6 @@ class UserController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string',
                 'phone_number' => 'required|string',
-                'avatar' => 'required|string'
             ]);
 
             // Hash password

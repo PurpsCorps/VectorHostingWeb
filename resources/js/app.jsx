@@ -10,6 +10,7 @@ import Navbar from './Pages/Navbar';
 import LoginPage from './Pages/LoginPage';
 import NotFoundPage from './Pages/NotFoundPage';
 import CartCheckoutPage from './Pages/CartCheckoutPage';
+import AboutUsPage from './Pages/AboutUsPage';
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
@@ -24,6 +25,7 @@ if (rootElement) {
                     <Route path="product" element={<ProductListPage />} />
                     <Route path="login" element={<LoginPage />} />
                     <Route path="cart" element={<CartCheckoutPage />} />
+                    <Route path="about-us" element={<AboutUsPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>

@@ -33,6 +33,32 @@ class OrderController extends Controller
             ]);
 
             $data = Order::create($validatedData);
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.fonnte.com/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'target' => '08973966207',
+                'message' => '*Orderan Baru Masuk*
+#' . $request->order_id . '
+Silahkan menuju ke Admin Dashboard untuk memerika bukti pembayaran!'
+            ),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . env('WA_TOKEN') //change TOKEN to your actual token
+            ),
+            ));
+
+            curl_exec($curl);
+            curl_close($curl);
+
             return response()->json($data, 201);
         } catch (\Exception $e) {
             return response()->json([

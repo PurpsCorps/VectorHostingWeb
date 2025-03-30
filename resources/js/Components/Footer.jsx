@@ -5,7 +5,8 @@ import {
   Instagram,
   Linkedin,
   Mail,
-  Phone
+  Phone,
+  PhoneCall
 } from 'lucide-react';
 
 const Footer = () => {
@@ -24,16 +25,13 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-blue-500 transition">
-                <Facebook size={24} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-blue-500 transition">
                 <Twitter size={24} />
               </a>
               <a href="#" className="text-gray-400 hover:text-blue-500 transition">
                 <Instagram size={24} />
               </a>
               <a href="#" className="text-gray-400 hover:text-blue-500 transition">
-                <Linkedin size={24} />
+                <PhoneCall size={24} />
               </a>
             </div>
           </div>
@@ -86,11 +84,11 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Mail size={20} className="text-blue-500" />
-                <span className="text-gray-400">support@vectorhosting.com</span>
+                <span className="text-gray-400">support@vector-hosting.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone size={20} className="text-blue-500" />
-                <span className="text-gray-400">+62 812-3456-7890</span>
+                <span className="text-gray-400">+62 895-3608-90700</span>
               </div>
               <div className="mt-4">
                 <p className="text-gray-500 text-sm">

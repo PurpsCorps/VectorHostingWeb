@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class PaymentProofController extends Controller
 {
+    public function index()
+    {
+        //
+    }
     /**
      * Upload payment proof for an order
      *

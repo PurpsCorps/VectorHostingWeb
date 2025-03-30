@@ -119,14 +119,14 @@ const CartCheckoutPage = () => {
             }
 
             const user = JSON.parse(userSession);
-            const response = await axios.get('/api/user/'+user.id, {
+            const response = await axios.get(`/api/user/${user.id}/`, {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             });
             setSaldo(response.data.saldo);
             setIsLoading(true);
 
             // Fetch cart data
-            const cartResponse = await axios.get(`/api/cart/${user.id}`, {
+            const cartResponse = await axios.get(`/api/cart/${user.id}/`, {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             });
 
@@ -139,7 +139,7 @@ const CartCheckoutPage = () => {
             const uniqueProductIds = [...new Set(productIds)];
 
             const productPromises = uniqueProductIds.map(id =>
-            axios.get(`/api/product/${id}`, {
+            axios.get(`/api/product/${id}/`, {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             })
             );
@@ -184,7 +184,7 @@ const CartCheckoutPage = () => {
 
                 // Gunakan updatedItems langsung untuk mengirim ke server
                 setTimeout(async function() {
-                await axios.patch(`/api/cart/${user.id}/`, {
+                await axios.patch(`/api/cart/${user.id}`, {
                     cart: JSON.stringify(updatedItems),
                 }, {
                     headers: {'X-Requested': import.meta.env.VITE_API_KEY}
@@ -212,7 +212,7 @@ const CartCheckoutPage = () => {
         setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
 
         // Remove from server
-        await axios.delete(`/api/cart/${user.id}/remove/${productId}`, {
+        await axios.delete(`/api/cart/${user.id}/remove/${productId}/`, {
             headers: {'X-Requested': import.meta.env.VITE_API_KEY}
         });
 
@@ -286,7 +286,7 @@ const CartCheckoutPage = () => {
             payment_method: paymentMethod,
             subtotal: calculateSubtotal(),
             total: calculateTotal(),
-            status: uploadStatus === 'success' ? 'processing' : 'pending',
+            status: uploadStatus === 'success' ? 'waiting_payment_confirm' : 'pending',
             payment_proof: paymentProofURL,
         };
 

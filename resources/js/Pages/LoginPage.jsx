@@ -79,7 +79,7 @@ const LoginPage = () => {
             if (isPasswordValid) {
                 // Successful login
                 let tokens = token();
-                await axios.patch('/api/user/'+ user.id, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                await axios.patch(`/api/user/${user.id}`, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 if(sessionStorage.getItem('user')) {
                     sessionStorage.removeItem('user');
                 }
@@ -109,7 +109,7 @@ const LoginPage = () => {
                 let tokens = tokenphone() + tokenphone() + tokenphone() + tokenphone();
                 setCtoken(tokens);
                 setSukses('Silahkan Cek WhatsApp Anda dan Masukan Token yang diberikan!');
-                await axios.patch('/api/token/'+nohp, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                await axios.patch(`/api/token/${nohp}`, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
                 // In a real implementation, you would hash the password before sending
             } else if(ctoken == tokeninpt) {
                 // Create a new user object matching the API structure
@@ -119,7 +119,6 @@ const LoginPage = () => {
                     phone_number: nohp,
                     password: password, // In production, use hashedPassword
                     email_verified_at: null,
-                    avatar: '01JPJ723HVRK8M28Z06J1GDHYB.png',
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 };
