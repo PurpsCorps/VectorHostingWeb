@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, CreditCard, Truck, User, MapPin, ChevronRight, AlertCircle, Check, Trash, Plus, Minus, Upload } from 'lucide-react';
+import { ShoppingCart, ChevronRight, AlertCircle, Check, Trash, Plus, Minus, Upload } from 'lucide-react';
 import axios from 'axios';
 
 const CartCheckoutPage = () => {
@@ -9,7 +9,7 @@ const CartCheckoutPage = () => {
     const [error, setError] = useState('');
     const [sukses, setSukses] = useState('');
     const [step, setStep] = useState(1); // 1: Cart Review, 2: Payment, 3: Confirmation
-    const [paymentMethod, setPaymentMethod] = useState('qris');
+    const [paymentMethod, setPaymentMethod] = useState('');
     const [orderid, setOrderID] = useState('');
     const [saldo, setSaldo] = useState();
     const [paymentProof, setPaymentProof] = useState(null);

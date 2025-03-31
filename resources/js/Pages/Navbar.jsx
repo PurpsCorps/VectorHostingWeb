@@ -162,11 +162,11 @@ const Navbar = () => {
                     <Link to="/client" className="block px-4 py-2 text-sm hover:bg-gray-800">
                       Client Panel
                     </Link>
-                    {users.is_admin && (
+                    {users.is_admin? (
                       <a href="/admin" className="block px-4 py-2 text-sm hover:bg-gray-800">
                         Admin Area
                       </a>
-                    )}
+                    ):''}
                     <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-gray-800">
                       Profile Settings
                     </Link>
@@ -275,7 +275,7 @@ const Navbar = () => {
                   >
                     Client Panel
                   </Link>
-                  {users.is_admin && (
+                  {users.is_admin ? (
                     <a
                       href="/admin"
                       className="hover:text-blue-500 transition"
@@ -283,7 +283,7 @@ const Navbar = () => {
                     >
                       Admin Area
                     </a>
-                  )}
+                  ):''}
                   <Link
                     to="/profile"
                     className="hover:text-blue-500 transition"
