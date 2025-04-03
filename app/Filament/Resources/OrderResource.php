@@ -18,7 +18,11 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+
+    protected static ?string $navigationGroup = 'Order Management';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -66,15 +70,15 @@ class OrderResource extends Resource
                     ->getStateUsing(function (Order $record): string {
                         $items = $record->status;
 
-                        if($items === "waiting_payment_confirm") {
+                        if($items === "Waiting for Payment") {
                             $items = "Waiting for Payment";
-                        } else if($items === "payment_confirmed") {
+                        } else if($items === "Payment Confirmed") {
                             $items = "Payment Confirmed";
-                        } else if($items === "on_process") {
+                        } else if($items === "On Process") {
                             $items = "On Process";
-                        } else if($items === "completed") {
+                        } else if($items === "Completed") {
                             $items = "Completed";
-                        } else if($items === "canceled") {
+                        } else if($items === "Canceled") {
                             $items = "Canceled";
                         }
 
@@ -96,17 +100,17 @@ class OrderResource extends Resource
                 Action::make('Payment Proof')
                     ->url(fn (Order $record): string => env('APP_URL').'/storage/payment_proofs/'.$record->payment_proof)
                     ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->hidden(fn (Order $record): bool => $record->status !== "waiting_payment_confirm")
+                    ->hidden(fn (Order $record): bool => $record->status !== "Waiting for Payment")
                     ->openUrlInNewTab(),
                 Action::make('Confirm Payment')
                     ->button()
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->action(function (Order $record) {
-                        $record->update(['status' => 'payment_confirmed']);
+                        $record->update(['status' => 'Payment Confirmed']);
                     })
                     ->requiresConfirmation()
-                    ->hidden(fn (Order $record): bool => $record->status !== "waiting_payment_confirm")
+                    ->hidden(fn (Order $record): bool => $record->status !== "Waiting for Payment")
                     ->successNotificationTitle('Order marked as Payment Confirmed'),
                 Action::make('process')
                     ->button()
@@ -114,10 +118,10 @@ class OrderResource extends Resource
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
                     ->action(function (Order $record) {
-                        $record->update(['status' => 'on_process']);
+                        $record->update(['status' => 'On Process']);
                     })
                     ->requiresConfirmation()
-                    ->hidden(fn (Order $record): bool => $record->status === 'on_process' || $record->status === 'completed' || $record->status === 'canceled' || $record->status === "waiting_payment_confirm")
+                    ->hidden(fn (Order $record): bool => $record->status === 'On Process' || $record->status === 'Completed' || $record->status === 'Canceled' || $record->status === "Waiting for Payment")
                     ->successNotificationTitle('Order marked as On Process'),
                 Action::make('complete')
                     ->button()
@@ -125,10 +129,10 @@ class OrderResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->action(function (Order $record) {
-                        $record->update(['status' => 'completed']);
+                        $record->update(['status' => 'Completed']);
                     })
                     ->requiresConfirmation()
-                    ->hidden(fn (Order $record): bool => $record->status === 'completed' || $record->status === 'canceled' || $record->status === "waiting_payment_confirm")
+                    ->hidden(fn (Order $record): bool => $record->status === 'Completed' || $record->status === 'Canceled' || $record->status === "Waiting for Payment")
                     ->successNotificationTitle('Order marked as Completed'),
                 Action::make('cancel')
                     ->button()
@@ -136,19 +140,29 @@ class OrderResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->action(function (Order $record) {
-                        $record->update(['status' => 'canceled']);
+                        $record->update(['status' => 'Canceled']);
                     })
                     ->requiresConfirmation()
-                    ->hidden(fn (Order $record): bool => $record->status === 'canceled' || $record->status === 'completed')
+                    ->hidden(fn (Order $record): bool => $record->status === 'Canceled' || $record->status === 'Completed')
                     ->successNotificationTitle('Order marked as Canceled'),
                 Tables\Actions\EditAction::make()
-                ->hidden(fn (Order $record): bool => $record->status === "waiting_payment_confirm"),
+                ->hidden(fn (Order $record): bool => $record->status === "Waiting for Payment"),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return Order::query()->where('status', 'Waiting for Payment')->count() . ' / ' . Order::query()->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return Order::query()->where('status', 'Waiting for Payment')->count() > 0 ? 'warning' : 'primary';
     }
 
     public static function getRelations(): array

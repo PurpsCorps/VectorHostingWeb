@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Server, HardDrive, Globe, Clock, CreditCard, Bell, Settings, LogOut, BarChart2, Shield, Activity } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ClientPanel = () => {
     const [services, setServices] = useState([]);
@@ -13,6 +14,7 @@ const ClientPanel = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Get user from session storage
@@ -37,8 +39,8 @@ const ClientPanel = () => {
                 setStats({
                     activeServices: response.data.filter(service => service.status === 'active').length,
                     totalServices: response.data.length,
-                    upcomingInvoices: 2, // This would come from another API call in a real app
-                    tickets: 1 // This would come from another API call in a real app
+                    upcomingInvoices: 0, // This would come from another API call in a real app
+                    tickets: 0 // This would come from another API call in a real app
                 });
 
                 setLoading(false);
@@ -54,6 +56,14 @@ const ClientPanel = () => {
     const handleLogout = () => {
         sessionStorage.removeItem('user');
         window.location.href = '/login';
+    };
+
+    const handleSelectNew = () => {
+        navigate('/product');
+    };
+
+    const handleSelectManage = () => {
+        window.location.href = 'https://panel.vector-hosting.com';
     };
 
     const renderStatusBadge = (status) => {
@@ -131,7 +141,7 @@ const ClientPanel = () => {
                         <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-bold text-white">Your Services</h2>
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                                <button onClick={handleSelectNew} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">
                                     Order New Service
                                 </button>
                             </div>
@@ -178,7 +188,7 @@ const ClientPanel = () => {
                                                         {renderStatusBadge(service.status)}
                                                     </td>
                                                     <td className="py-4 px-4 text-right">
-                                                        <button className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-sm transition mr-2">
+                                                        <button onClick={handleSelectManage} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-sm transition mr-2">
                                                             Manage
                                                         </button>
                                                         <button className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg text-sm transition">

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\ServerResource\Pages;
+use App\Filament\Resources\ServerResource\RelationManagers;
+use App\Models\Server;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,46 +13,39 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class ServerResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Server::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationGroup = 'Order Management';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\FileUpload::make('avatar')
-                    ->avatar()
-                    ->image(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
+                Forms\Components\TextInput::make('location')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('saldo')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->required(),
-                Forms\Components\Select::make('is_admin')
-                    ->label('Admin')
-                    ->options([
-                        1 => 'True',
-                        0 => 'False',
-                    ])
+                    ->maxLength(100),
+                Forms\Components\TextInput::make('cpu_cores')
                     ->required()
-                    ->native(false),
-                Forms\Components\TextInput::make('password')
-                    ->password()
+                    ->numeric(),
+                Forms\Components\TextInput::make('memory_gb')
                     ->required()
-                    ->maxLength(255),
+                    ->numeric(),
+                Forms\Components\TextInput::make('disk_gb')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('bandwidth_tb')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('status'),
             ]);
     }
 
@@ -60,21 +53,23 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('avatar')
-                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('location')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('saldo')
-                    ->numeric(
-                        thousandsSeparator: '.'
-                    )
-                    ->prefix('Rp ')
+                Tables\Columns\TextColumn::make('cpu_cores')
+                    ->numeric()
                     ->sortable(),
-                Tables\Columns\BooleanColumn::make('is_admin')
-                    ->label('Admin')
+                Tables\Columns\TextColumn::make('memory_gb')
+                    ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('disk_gb')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('bandwidth_tb')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -107,9 +102,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListServers::route('/'),
+            'create' => Pages\CreateServer::route('/create'),
+            'edit' => Pages\EditServer::route('/{record}/edit'),
         ];
     }
 }

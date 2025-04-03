@@ -222,7 +222,23 @@ const ProductShow = (props) => {
                 </div>
                 <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2 text-white">{product.label}</h3>
-                    <p className="text-gray-400 mb-4 h-12 overflow-hidden">{product.spek}</p>
+                    <div className="text-gray-400 mb-4">
+                        {Array.isArray(product.spek) ? (
+                            <ul>
+                                {product.spek.map((feature, idx) => (
+                                    <li
+                                        key={idx}
+                                        className="flex items-center text-gray-300"
+                                    >
+                                        <Check className="text-blue-500 mr-3" size={20} />
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-300">No specifications available</p>
+                        )}
+                    </div>
                     <div className="mt-4 mb-4">
                     <span className="text-2xl font-bold text-blue-400">Rp{product.price.toLocaleString()}</span>
                     </div>

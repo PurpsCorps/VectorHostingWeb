@@ -89,6 +89,7 @@ const LoginPage = () => {
                     name: user.name,
                     email: user.email,
                     loginToken: tokens,
+                    phone: user.phone_number
                 }));
 
                 // Redirect to dashboard or home

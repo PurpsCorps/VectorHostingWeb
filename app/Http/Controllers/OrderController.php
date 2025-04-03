@@ -59,6 +59,37 @@ Silahkan menuju ke Admin Dashboard untuk memerika bukti pembayaran!'
             curl_exec($curl);
             curl_close($curl);
 
+            $curl2 = curl_init();
+
+            curl_setopt_array($curl2, array(
+            CURLOPT_URL => 'https://api.fonnte.com/send',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'target' => $request->user_phone,
+                'message' => '*Orderan Anda Telah Kami Terima*
+*Order ID:* #' . $request->order_id . '
+*Subtotal:* Rp. ' . $request->subtotal . '
+*Mohon menunggu Admin untuk Persetujuan Pembayaran!*
+
+Selalu Pantau Order Status mu di
+https://vector-hosting.com/client
+
+**Terima Kasih Sudah Berbelanja.**'
+            ),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: ' . env('WA_TOKEN') //change TOKEN to your actual token
+            ),
+            ));
+
+            curl_exec($curl2);
+            curl_close($curl2);
+
             return response()->json($data, 201);
         } catch (\Exception $e) {
             return response()->json([

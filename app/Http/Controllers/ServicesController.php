@@ -21,7 +21,29 @@ class ServicesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $validatedData = $request->validate([
+                'order_id' => 'required|string',
+                'user_id' => 'required|integer',
+                'name' => 'required|string',
+                'type' => 'required|in:vps,hosting,storage',
+                'domain' => 'required|string',
+                'ip' => 'required|string',
+                'plan' => 'required|string',
+                'status' => 'required|in:active,pending,suspended,cancelled',
+                'renewal_date' => 'required',
+                'server_id' => 'required|integer',
+            ]);
+
+            $data = Service::create($validatedData);
+
+            return response()->json($data, 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

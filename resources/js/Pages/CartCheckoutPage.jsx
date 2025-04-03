@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, ChevronRight, AlertCircle, Check, Trash, Plus, Minus, Upload } from 'lucide-react';
 import axios from 'axios';
+import { useCart } from '../Pages/CartContext';  // Import the hook
 
 const CartCheckoutPage = () => {
+    const { updateCartCount } = useCart();
     const [cartItems, setCartItems] = useState([]);
     const [products, setProducts] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +18,7 @@ const CartCheckoutPage = () => {
     const [uploadStatus, setUploadStatus] = useState('');
     const [previewUrl, setPreviewUrl] = useState('');
     const [paymentProofURL, setPaymentProofURL] = useState('');
+    const [cartItemDomains, setCartItemDomains] = useState({});
 
     const generateorderid = function() {
         return "Vector-" + Math.floor(100000 + Math.random() * 900000);
@@ -49,6 +52,13 @@ const CartCheckoutPage = () => {
         reader.readAsDataURL(file);
 
         setUploadStatus('ready');
+    };
+
+    const handleDomainChange = (productId, domain) => {
+        setCartItemDomains(prev => ({
+            ...prev,
+            [productId]: domain
+        }));
     };
 
     // Handle file upload
@@ -239,8 +249,8 @@ const CartCheckoutPage = () => {
 
     const handleNextStep = () => {
         if (step < 3) {
-        setStep(step + 1);
-        window.scrollTo(0, 0);
+            setStep(step + 1);
+            window.scrollTo(0, 0);
         }
     };
 
@@ -253,64 +263,105 @@ const CartCheckoutPage = () => {
 
     const handleCheckout = async () => {
         try {
-        setIsLoading(true);
-        const userSession = sessionStorage.getItem('user');
-        if (!userSession) {
-            window.location.href = '/login';
-            return;
-        }
+            setIsLoading(true);
+            const userSession = sessionStorage.getItem('user');
+            if (!userSession) {
+                window.location.href = '/login';
+                return;
+            }
 
-        const user = JSON.parse(userSession);
-        const response = await axios.get('/api/user/'+user.id, {
-            headers: {'X-Requested': import.meta.env.VITE_API_KEY}
-        });
-        setSaldo(response.data.saldo);
+            const user = JSON.parse(userSession);
+            const response = await axios.get('/api/user/'+user.id, {
+                headers: {'X-Requested': import.meta.env.VITE_API_KEY}
+            });
+            setSaldo(response.data.saldo);
 
-        // Format order items
-        const orderItems = cartItems.map(item => ({
-            product_id: item.product_id,
-            quantity: item.qty,
-            price: products[item.product_id]?.price || 0,
-            name: products[item.product_id]?.name || 'Product'
-        }));
+            // Format order items
+            const orderItems = cartItems.map(item => ({
+                product_id: item.product_id,
+                quantity: item.qty,
+                price: products[item.product_id]?.price || 0,
+                name: products[item.product_id]?.name || 'Product',
+                label: products[item.product_id]?.label || 'Product',
+                domain: cartItemDomains[item.product_id]
+            }));
 
-        let oid = generateorderid();
+            let oid = generateorderid();
 
-        orderid?  '' : setOrderID(oid);
+            orderid?  '' : setOrderID(oid);
 
-        // Create order object
-        const order = {
-            order_id: orderid? orderid : oid,
-            user_id: user.id,
-            items: JSON.stringify(orderItems),
-            payment_method: paymentMethod,
-            subtotal: calculateSubtotal(),
-            total: calculateTotal(),
-            status: uploadStatus === 'success' ? 'waiting_payment_confirm' : 'pending',
-            payment_proof: paymentProofURL,
-        };
+            let proofuri = paymentProofURL;
+            let upstat = uploadStatus;
 
-        await axios.post('/api/order', order, {
-            headers: {'X-Requested': import.meta.env.VITE_API_KEY}
-        });
+            if (paymentMethod === 'saldo'){
+                if (saldo >= calculateSubtotal()) {
+                    proofuri = 'user.png';
+                    upstat = 'success';
+                } else {
+                    setError('Saldo Tidak Cukup.');
+                    return;
+                }
+            }
 
-        // Clear cart
-        await axios.patch(`/api/cart/${user.id}`, {order: 1, cart: '[]'}, {
-            headers: {'X-Requested': import.meta.env.VITE_API_KEY}
-        });
+            // Create order object
+            const order = {
+                order_id: orderid? orderid : oid,
+                user_id: user.id,
+                items: JSON.stringify(orderItems),
+                payment_method: paymentMethod,
+                subtotal: calculateSubtotal(),
+                total: calculateTotal(),
+                status: upstat === 'success' ? 'Waiting for Payment' : 'pending',
+                payment_proof: proofuri,
+                user_phone: user.phone
+            };
+            var today = new Date();
+            var year = today.getFullYear();
+            var mes = today.getMonth()+2;
+            var dia = today.getDate();
+            var fecha =year+"-"+mes+"-"+dia;
 
-        await axios.patch('/api/payment/proof/1', {order_id: order.order_id, temp_filename: paymentProofURL}, {
-            headers: {'X-Requested': import.meta.env.VITE_API_KEY}
-        });
+            orderItems? orderItems.map(async (item, index) => {
+                const service = {
+                    order_id: orderid? orderid : oid,
+                    user_id: user.id,
+                    name: item.label,
+                    type: 'hosting',
+                    domain: item.domain,
+                    ip: '-',
+                    plan: item.label,
+                    status: 'pending',
+                    renewal_date: fecha,
+                    server_id: 1,
+                };
 
-        // Show success message and move to confirmation step
-        setSukses('Order placed successfully!');
-        setStep(3);
+                await axios.post('/api/services', service, {
+                    headers: {'X-Requested': import.meta.env.VITE_API_KEY}
+                });
+            }) : '';
+
+            await axios.post('/api/order', order, {
+                headers: {'X-Requested': import.meta.env.VITE_API_KEY}
+            });
+
+            // Clear cart
+            await axios.patch(`/api/cart/${user.id}`, {order: 1, cart: '[]'}, {
+                headers: {'X-Requested': import.meta.env.VITE_API_KEY}
+            });
+
+            paymentMethod === 'saldo'? '' : await axios.patch('/api/payment/proof/1', {order_id: order.order_id, temp_filename: paymentProofURL}, {
+                headers: {'X-Requested': import.meta.env.VITE_API_KEY}
+            });
+
+            // Show success message and move to confirmation step
+            setSukses('Order placed successfully!');
+            updateCartCount(0);
+            setStep(3);
         } catch (err) {
-        console.error('Checkout error:', err);
-        setError('An error occurred during checkout. Please try again.');
+            console.error('Checkout error:', err);
+            setError('An error occurred during checkout. Please try again.');
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -422,45 +473,65 @@ const CartCheckoutPage = () => {
         ) : (
             <>
             <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-800/80 shadow-xl shadow-blue-900/20 mb-6">
-                {cartItems.map((item, index) => {
+            {cartItems.map((item, index) => {
                 const product = products[item.product_id] || {};
                 return (
-                    <div key={index} className="flex items-center justify-between py-4 border-b border-gray-800 last:border-0">
-                    <div className="flex items-center">
+                    <div key={index} className="flex flex-col py-4 border-b border-gray-800 last:border-0">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
                         <div className="bg-gray-800 w-16 h-16 rounded-lg mr-4 flex items-center justify-center overflow-hidden">
-                        {product.image ? (
+                            {product.image ? (
                             <img src={import.meta.env.VITE_URL + '/storage/' + product.image} alt={product.name} className="object-cover w-full h-full" />
-                        ) : (
+                            ) : (
                             <ShoppingCart className="text-gray-600" size={24} />
-                        )}
+                            )}
                         </div>
                         <div>
-                        <h3 className="font-medium text-white">{product.label || `Product #${item.product_id}`}</h3>
-                        <p className="text-gray-400 text-sm">Rp {product.price?.toLocaleString() || '0.00'}</p>
+                            <h3 className="font-medium text-white">{product.label || `Product #${item.product_id}`}</h3>
+                            <p className="text-gray-400 text-sm">Rp {product.price?.toLocaleString() || '0.00'}</p>
                         </div>
-                    </div>
-                    <div className="flex items-center">
+                        </div>
+                        <div className="flex items-center">
                         <div className="flex items-center bg-gray-800 rounded-lg mr-4">
-                        <button
+                            <button
                             onClick={() => updateQuantity(item.product_id, item.qty - 1)}
                             className="p-1 text-gray-400 hover:text-white"
-                        >
+                            >
                             <Minus size={16} />
-                        </button>
-                        <span className="px-3 text-white">{item.qty}</span>
-                        <button
+                            </button>
+                            <span className="px-3 text-white">{item.qty}</span>
+                            <button
                             onClick={() => updateQuantity(item.product_id, item.qty + 1)}
                             className="p-1 text-gray-400 hover:text-white"
-                        >
+                            >
                             <Plus size={16} />
-                        </button>
+                            </button>
                         </div>
                         <button
-                        onClick={() => removeItem(item.product_id)}
-                        className="text-red-400 hover:text-red-300"
+                            onClick={() => removeItem(item.product_id)}
+                            className="text-red-400 hover:text-red-300"
                         >
-                        <Trash size={18} />
+                            <Trash size={18} />
                         </button>
+                        </div>
+                    </div>
+
+                    {/* Domain input field for each product */}
+                    <div className="mt-3 pl-20">
+                        <div className="flex flex-col">
+                        <label htmlFor={`domain-${item.product_id}`} className="text-sm text-gray-400 mb-1">
+                            Enter Domain
+                        </label>
+                        <input
+                            id={`domain-${item.product_id}`}
+                            type="text"
+                            placeholder="example.com"
+                            value={cartItemDomains[item.product_id] || ''}
+                            onChange={(e) => handleDomainChange(item.product_id, e.target.value)}
+                            className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm focus:border-blue-500 focus:outline-none"
+                            required
+                        />
+                        </div>
                     </div>
                     </div>
                 );
@@ -563,7 +634,7 @@ const CartCheckoutPage = () => {
                     <div className="flex items-center">
                     <div className="text-blue-400 mr-3 font-bold text-xl">Rp</div>
                     <div>
-                        <h3 className="font-medium">Saldo (Rp. {saldo})</h3>
+                        <h3 className="font-medium">Saldo (Rp. {saldo.toLocaleString()})</h3>
                         <p className="text-sm text-gray-400">Pay directly from your saldo</p>
                     </div>
                     </div>
@@ -592,96 +663,100 @@ const CartCheckoutPage = () => {
                         <div className="bg-gray-900/50 p-4 rounded-lg mb-6">
                             <div className="grid grid-cols-2 gap-2 text-sm">
                                 <div className="text-gray-400">Bank Name:</div>
-                                <div className="font-medium">Bank Central Asia (BCA)</div>
+                                <div className="font-medium">Bank Jago</div>
 
                                 <div className="text-gray-400">Account Number:</div>
-                                <div className="font-medium">1234567890</div>
+                                <div className="font-medium">101940192191</div>
 
                                 <div className="text-gray-400">Account Holder:</div>
-                                <div className="font-medium">PT Vector Indonesia</div>
+                                <div className="font-medium">M FAHRI RAMADHAN</div>
                             </div>
                         </div>
                     </div>
                     </div>
                 )}
-                <h4 className="font-medium mb-2">Upload Payment Proof</h4>
-                <p className="text-sm text-gray-400 mb-4">
-                    Please upload a screenshot or photo of your payment receipt
-                </p>
+                {paymentMethod && paymentMethod !== 'saldo' && (
+                    <div>
+                    <h4 className="font-medium mb-2">Upload Payment Proof</h4>
+                    <p className="text-sm text-gray-400 mb-4">
+                        Please upload a screenshot or photo of your payment receipt
+                    </p>
 
 
-                <div className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                    previewUrl ? 'border-blue-500' : 'border-gray-600'
-                } transition-all duration-200 hover:border-blue-400 relative`}>  {/* Added relative positioning */}
+                    <div className={`border-2 border-dashed rounded-lg p-6 text-center ${
+                        previewUrl ? 'border-blue-500' : 'border-gray-600'
+                    } transition-all duration-200 hover:border-blue-400 relative`}>  {/* Added relative positioning */}
 
-                    {!previewUrl ? (
-                        <>
-                            <div className="flex flex-col items-center justify-center">
-                                <Upload className="h-10 w-10 text-gray-400 mb-2" />
-                                <p className="text-gray-300 mb-2">Drag and drop your file here, or click to browse</p>
-                                <p className="text-xs text-gray-500">JPG or PNG, max 2MB</p>
+                        {!previewUrl ? (
+                            <>
+                                <div className="flex flex-col items-center justify-center">
+                                    <Upload className="h-10 w-10 text-gray-400 mb-2" />
+                                    <p className="text-gray-300 mb-2">Drag and drop your file here, or click to browse</p>
+                                    <p className="text-xs text-gray-500">JPG or PNG, max 2MB</p>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/jpeg, image/png"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={handleFileChange}
+                                />
+                            </>
+                        ) : (
+                            <div className="relative">
+                                <img
+                                    src={previewUrl}
+                                    alt="Payment proof preview"
+                                    className="max-h-64 max-w-full mx-auto rounded-lg"
+                                />
+                                <button
+                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                                    onClick={() => {
+                                        setPaymentProof(null);
+                                        setPreviewUrl('');
+                                        setUploadStatus('');
+                                    }}
+                                >
+                                    <Trash size={16} />
+                                </button>
                             </div>
-                            <input
-                                type="file"
-                                accept="image/jpeg, image/png"
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                onChange={handleFileChange}
-                            />
-                        </>
-                    ) : (
-                        <div className="relative">
-                            <img
-                                src={previewUrl}
-                                alt="Payment proof preview"
-                                className="max-h-64 max-w-full mx-auto rounded-lg"
-                            />
+                        )}
+                    </div>
+
+                    {previewUrl && (
+                        <div className="mt-4">
                             <button
-                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
-                                onClick={() => {
-                                    setPaymentProof(null);
-                                    setPreviewUrl('');
-                                    setUploadStatus('');
-                                }}
+                                onClick={handleUpload}
+                                disabled={uploadStatus === 'uploading' || uploadStatus === 'success'}
+                                className={`w-full py-2 px-4 rounded-lg flex items-center justify-center ${
+                                    uploadStatus === 'success'
+                                        ? 'bg-green-600 hover:bg-green-700'
+                                        : uploadStatus === 'uploading'
+                                            ? 'bg-gray-600 cursor-not-allowed'
+                                            : 'bg-blue-600 hover:bg-blue-700'
+                                } transition-colors duration-200`}
                             >
-                                <Trash size={16} />
+                                {uploadStatus === 'uploading' ? (
+                                    <>
+                                        <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                                        Uploading...
+                                    </>
+                                ) : uploadStatus === 'success' ? (
+                                    <>
+                                        <Check size={18} className="mr-2" />
+                                        Uploaded Successfully
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload size={18} className="mr-2" />
+                                        Upload Payment Proof
+                                    </>
+                                )}
                             </button>
                         </div>
                     )}
-                </div>
-
-                {previewUrl && (
-                    <div className="mt-4">
-                        <button
-                            onClick={handleUpload}
-                            disabled={uploadStatus === 'uploading' || uploadStatus === 'success'}
-                            className={`w-full py-2 px-4 rounded-lg flex items-center justify-center ${
-                                uploadStatus === 'success'
-                                    ? 'bg-green-600 hover:bg-green-700'
-                                    : uploadStatus === 'uploading'
-                                        ? 'bg-gray-600 cursor-not-allowed'
-                                        : 'bg-blue-600 hover:bg-blue-700'
-                            } transition-colors duration-200`}
-                        >
-                            {uploadStatus === 'uploading' ? (
-                                <>
-                                    <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
-                                    Uploading...
-                                </>
-                            ) : uploadStatus === 'success' ? (
-                                <>
-                                    <Check size={18} className="mr-2" />
-                                    Uploaded Successfully
-                                </>
-                            ) : (
-                                <>
-                                    <Upload size={18} className="mr-2" />
-                                    Upload Payment Proof
-                                </>
-                            )}
-                        </button>
                     </div>
-                )}
-                </div>
+                    )}
+                    </div>
             </div>
 
             <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-800/80 shadow-xl shadow-blue-900/20 mb-6">
@@ -732,7 +807,7 @@ const CartCheckoutPage = () => {
             <p className="font-medium">{orderid}</p>
             </div>
             <p className="text-gray-300 mb-8">
-            We have sent an order confirmation to your email address.
+            We have sent an order confirmation to your Whatsapp.
             You can check the status of your order in your account dashboard.
             </p>
             <div className="flex justify-center gap-4">
@@ -743,7 +818,7 @@ const CartCheckoutPage = () => {
                 Back to Home
             </button>
             <button
-                onClick={() => window.location.href = '/account/orders'}
+                onClick={() => window.location.href = '/client'}
                 className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 py-3 px-6 rounded-lg text-white font-medium hover:from-blue-700 hover:to-indigo-700 transition"
             >
                 Track Order
