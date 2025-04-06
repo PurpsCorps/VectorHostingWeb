@@ -48,19 +48,19 @@ const ProductListPage = () => {
           </button>
           <button
             className={`px-6 py-2 rounded-full whitespace-nowrap ${
+              activeCategory === 'domain' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'
+            }`}
+            onClick={() => setActiveCategory('domain')}
+          >
+            Domain
+          </button>
+          <button
+            className={`px-6 py-2 rounded-full whitespace-nowrap ${
               activeCategory === 'vps' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'
             }`}
             onClick={() => setActiveCategory('vps')}
           >
             VPS
-          </button>
-          <button
-            className={`px-6 py-2 rounded-full whitespace-nowrap ${
-              activeCategory === 'rdp' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'
-            }`}
-            onClick={() => setActiveCategory('rdp')}
-          >
-            RDP
           </button>
         </div>
       </div>

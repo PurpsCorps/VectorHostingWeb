@@ -26,7 +26,7 @@ class ServicesController extends Controller
                 'order_id' => 'required|string',
                 'user_id' => 'required|integer',
                 'name' => 'required|string',
-                'type' => 'required|in:vps,hosting,storage',
+                'type' => 'required|in:vps,hosting,storage,domain',
                 'domain' => 'required|string',
                 'ip' => 'required|string',
                 'plan' => 'required|string',

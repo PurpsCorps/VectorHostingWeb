@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, ChevronRight, AlertCircle, Check, Trash, Plus, Minus, Upload } from 'lucide-react';
+import { ShoppingCart, ChevronRight, AlertCircle, Check, Trash, Plus, Minus, Upload, Search } from 'lucide-react';
 import axios from 'axios';
 import { useCart } from '../Pages/CartContext';  // Import the hook
 
@@ -19,6 +19,9 @@ const CartCheckoutPage = () => {
     const [previewUrl, setPreviewUrl] = useState('');
     const [paymentProofURL, setPaymentProofURL] = useState('');
     const [cartItemDomains, setCartItemDomains] = useState({});
+    const [checkingDomain, setCheckingDomain] = useState({});
+    const [domainStatus, setDomainStatus] = useState({});
+    const [domainError, setDomainError] = useState(0);
 
     const generateorderid = function() {
         return "Vector-" + Math.floor(100000 + Math.random() * 900000);
@@ -59,6 +62,49 @@ const CartCheckoutPage = () => {
             ...prev,
             [productId]: domain
         }));
+
+        // Reset domain status when changing domain value
+        setDomainStatus(prev => ({
+            ...prev,
+            [productId]: null
+        }));
+
+        setDomainError(0);
+    };
+
+    const checkDomainAvailability = async (productId) => {
+        const domain = cartItemDomains[productId];
+
+        if (!domain) {
+            setError('Please enter a domain name first');
+            return;
+        }
+
+        try {
+            setCheckingDomain(prev => ({
+                ...prev,
+                [productId]: true
+            }));
+
+            // Make API call to check domain availability
+            const response = await axios.get(`https://domain-availability.whoisxmlapi.com/api/v1?apiKey=at_MR3M6e05rCgzwppHzULZ4NaD4ltT6&domainName=${domain}&credits=DA`);
+
+            // Update domain status
+            response.data.DomainInfo.domainAvailability === "AVAILABLE" ? setDomainError(0) : setDomainError(1);
+
+            setDomainStatus(prev => ({
+                ...prev,
+                [productId]: response.data.DomainInfo
+            }));
+        } catch (err) {
+            console.error('Error checking domain availability:', err);
+            setError('Failed to check domain availability. Please try again.');
+        } finally {
+            setCheckingDomain(prev => ({
+                ...prev,
+                [productId]: false
+            }));
+        }
     };
 
     // Handle file upload
@@ -229,8 +275,7 @@ const CartCheckoutPage = () => {
         setSukses('Item removed from cart');
         setTimeout(() => setSukses(''), 3000);
         } catch (err) {
-        console.error('Error removing item:', err);
-        setError('Failed to remove item. Please try again.');
+            console.error('Error removing item:', err);
         } finally {
         setIsLoading(false);
         }
@@ -248,6 +293,12 @@ const CartCheckoutPage = () => {
     };
 
     const handleNextStep = () => {
+        if(domainError){
+            setError('Domain sudah digunakan!');
+            return
+        } else {
+            setError('');
+        }
         if (step < 3) {
             setStep(step + 1);
             window.scrollTo(0, 0);
@@ -283,7 +334,8 @@ const CartCheckoutPage = () => {
                 price: products[item.product_id]?.price || 0,
                 name: products[item.product_id]?.name || 'Product',
                 label: products[item.product_id]?.label || 'Product',
-                domain: cartItemDomains[item.product_id]
+                category: products[item.product_id]?.category || 'Product',
+                domain: cartItemDomains[item.product_id] || '-'
             }));
 
             let oid = generateorderid();
@@ -326,7 +378,7 @@ const CartCheckoutPage = () => {
                     order_id: orderid? orderid : oid,
                     user_id: user.id,
                     name: item.label,
-                    type: 'hosting',
+                    type: item.category,
                     domain: item.domain,
                     ip: '-',
                     plan: item.label,
@@ -516,23 +568,81 @@ const CartCheckoutPage = () => {
                         </div>
                     </div>
 
-                    {/* Domain input field for each product */}
-                    <div className="mt-3 pl-20">
-                        <div className="flex flex-col">
-                        <label htmlFor={`domain-${item.product_id}`} className="text-sm text-gray-400 mb-1">
-                            Enter Domain
-                        </label>
-                        <input
-                            id={`domain-${item.product_id}`}
-                            type="text"
-                            placeholder="example.com"
-                            value={cartItemDomains[item.product_id] || ''}
-                            onChange={(e) => handleDomainChange(item.product_id, e.target.value)}
-                            className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm focus:border-blue-500 focus:outline-none"
-                            required
-                        />
+                    {/* Domain input field for hosting products */}
+                    {product.category === "hosting" && (
+                        <div className="mt-3 pl-20">
+                            <div className="flex flex-col">
+                            <label htmlFor={`domain-${item.product_id}`} className="text-sm text-gray-400 mb-1">
+                                Enter Domain
+                            </label>
+                            <input
+                                id={`domain-${item.product_id}`}
+                                type="text"
+                                placeholder="example.com"
+                                value={cartItemDomains[item.product_id] || ''}
+                                onChange={(e) => handleDomainChange(item.product_id, e.target.value)}
+                                className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-white text-sm focus:border-blue-500 focus:outline-none"
+                                required
+                            />
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {/* Domain input field with availability check for domain products */}
+                    {product.category === "domain" && (
+                        <div className="mt-3 pl-20">
+                            <div className="flex flex-col">
+                                <label htmlFor={`domain-${item.product_id}`} className="text-sm text-gray-400 mb-1">
+                                    Enter Domain Name
+                                </label>
+                                <div className="flex">
+                                    <input
+                                        id={`domain-${item.product_id}`}
+                                        type="text"
+                                        placeholder="example.com"
+                                        value={cartItemDomains[item.product_id] || ''}
+                                        onChange={(e) => handleDomainChange(item.product_id, e.target.value)}
+                                        className="flex-grow bg-gray-800 border border-gray-700 rounded-l-lg p-2 text-white text-sm focus:border-blue-500 focus:outline-none"
+                                        required
+                                    />
+                                    <button
+                                        onClick={() => checkDomainAvailability(item.product_id)}
+                                        disabled={checkingDomain[item.product_id]}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg px-4 flex items-center"
+                                    >
+                                        {checkingDomain[item.product_id] ? (
+                                            <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+                                        ) : (
+                                            <Search size={16} />
+                                        )}
+                                    </button>
+                                </div>
+
+                                {/* Domain availability status */}
+                                {domainStatus[item.product_id] && (
+                                    <div className={`mt-2 py-2 px-3 rounded ${
+                                        domainStatus[item.product_id].domainAvailability === "AVAILABLE"
+                                        ? "bg-green-900/30 border border-green-800/50 text-green-400"
+                                        : "bg-red-900/30 border border-red-800/50 text-red-400"
+                                    }`}>
+                                        <div className="flex items-center">
+                                            {domainStatus[item.product_id].domainAvailability === "AVAILABLE" ? (
+                                                <Check size={16} className="mr-2 text-green-400" />
+                                            ) : (
+                                                <AlertCircle size={16} className="mr-2 text-red-400" />
+                                            )}
+                                            <span>
+                                                {domainStatus[item.product_id].domainName} is {" "}
+                                                {domainStatus[item.product_id].domainAvailability === "AVAILABLE"
+                                                    ? "available for registration"
+                                                    : "already taken"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     </div>
                 );
                 })}

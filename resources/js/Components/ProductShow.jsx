@@ -240,7 +240,7 @@ const ProductShow = (props) => {
                         )}
                     </div>
                     <div className="mt-4 mb-4">
-                    <span className="text-2xl font-bold text-blue-400">Rp{product.price.toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-blue-400">Rp{product.category === 'domain'? product.price.toLocaleString() + ' / tahun' : product.price.toLocaleString() + ' / bulan'}</span>
                     </div>
                     <div className="flex space-x-2">
                     <button

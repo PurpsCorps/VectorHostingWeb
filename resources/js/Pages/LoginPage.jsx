@@ -15,6 +15,7 @@ const LoginPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [sukses, setSukses] = useState('');
+    const [waktu, setWaktu] = useState(300);
 
     var tokenphone = function() {
         return Math.floor(Math.random() * 10).toString();
@@ -29,18 +30,39 @@ const LoginPage = () => {
     };
 
     // Fetch users data on component mount
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get('/api/user/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
-                setUsers(response.data);
-            } catch (err) {
-                console.error('Error fetching user data:', err);
-            }
-        };
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get('/api/user/', {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+            setUsers(response.data);
+        } catch (err) {
+            console.error('Error fetching user data:', err);
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
+
+    // Solusi dengan setInterval:
+    useEffect(() => {
+        if (ctoken && (ctoken != "0000000000000000")) {
+            let count = 300; // dimulai dari 300 detik
+            setWaktu(count);
+
+            const interval = setInterval(() => {
+                count--;
+                setWaktu(count);
+
+                if (count <= 0) {
+                    setCtoken("0000000000000000");
+                    clearInterval(interval);
+                }
+            }, 1000);
+
+            // Cleanup interval saat komponen unmount
+            return () => clearInterval(interval);
+        }
+    }, [ctoken]);
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
@@ -52,6 +74,13 @@ const LoginPage = () => {
         setError('');
         setSukses('');
     };
+
+    const tokenSend = async (nohp) => {
+        let tokens = tokenphone() + tokenphone() + tokenphone() + tokenphone();
+        setCtoken(tokens);
+        setSukses('Silahkan Cek WhatsApp Anda dan Masukan OTP yang diberikan!');
+        await axios.patch(`/api/token/${nohp}`, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -107,10 +136,7 @@ const LoginPage = () => {
             if (existingUser) {
                 setError('Username or email already exists');
             } else if (!ctoken) {
-                let tokens = tokenphone() + tokenphone() + tokenphone() + tokenphone();
-                setCtoken(tokens);
-                setSukses('Silahkan Cek WhatsApp Anda dan Masukan Token yang diberikan!');
-                await axios.patch(`/api/token/${nohp}`, {token: tokens}, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
+                tokenSend(nohp);
                 // In a real implementation, you would hash the password before sending
             } else if(ctoken == tokeninpt) {
                 // Create a new user object matching the API structure
@@ -127,10 +153,13 @@ const LoginPage = () => {
                 // Here you would make a POST request to register
                 await axios.post('/api/user', newUser, {headers: {'X-Requested': import.meta.env.VITE_API_KEY}});
 
-                setSukses('Registrasi Sukses.<br>Silahkan Login!');
+                setSukses('Registrasi Berhasil, Silahkan Login!');
                 setTimeout(() => setSukses(''), 5000);
+                fetchUsers();
                 setCtoken('');
-                window.location.href = '/login';
+                setWaktu(300);
+                setIsLogin(true);
+                // window.location.href = '/login';
             } else {
                 setError('Token Salah!');
             }
@@ -221,7 +250,7 @@ const LoginPage = () => {
 
                 <form onSubmit={handleSubmit}>
                 {/* Email Field (Only for Register) */}
-                {!isLogin && (
+                {!isLogin && !ctoken && (
                     <div className="mb-4">
                         <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
                         <Mail className="text-blue-400 mr-2" size={20} />
@@ -238,6 +267,7 @@ const LoginPage = () => {
                 )}
 
                 {/* Username Field */}
+                {!ctoken && (
                     <div className="mb-4">
                         <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
                         <User className="text-blue-400 mr-2" size={20} />
@@ -251,13 +281,39 @@ const LoginPage = () => {
                         />
                         </div>
                     </div>
-                    {!isLogin && (
+                )}
+
+                {/* Password Field */}
+                {!ctoken && (
                     <div className="mb-4">
+                        <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
+                        <Lock className="text-blue-400 mr-2" size={20} />
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            className="bg-transparent border-none outline-none w-full text-white"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        </div>
+                        {isLogin && (
+                            <div className="text-right">
+                            <a href="#forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
+                            Forgot password?
+                            </a>
+                        </div>
+                        )}
+                    </div>
+                )}
+
+                {!isLogin && !ctoken && (
+                    <div className="mb-6">
                         <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
                         <Phone className="text-blue-400 mr-2" size={20} />
                         <input
                             type="text"
-                            placeholder="Nomor HP"
+                            placeholder="Nomor HP (WhatsApp)"
                             className="bg-transparent border-none outline-none w-full text-white"
                             value={nohp}
                             onChange={(e) => setNohp(e.target.value)}
@@ -268,42 +324,39 @@ const LoginPage = () => {
                 )}
 
                 {ctoken && (
-                    <div className="mb-4">
-                        <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
-                        <Code className="text-blue-400 mr-2" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Token"
-                            className="bg-transparent border-none outline-none w-full text-white"
-                            value={tokeninpt}
-                            onChange={(e) => setTokeninpt(e.target.value)}
-                            required
-                        />
+                    <div className="mb-6">
+                        {/* OTP Input field */}
+                        <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-2 border border-gray-700/50 focus-within:border-blue-500/50 transition">
+                            <Code className="text-blue-400 mr-2" size={20} />
+                            <input
+                                type="text"
+                                placeholder="Masukan OTP"
+                                className="bg-transparent border-none outline-none w-full text-white"
+                                value={tokeninpt}
+                                onChange={(e) => setTokeninpt(e.target.value)}
+                                required
+                            />
+                            {ctoken !== "0000000000000000" && (
+                                <p className="text-blue-400 text-sm">
+                                    0{Math.floor(waktu/60)}:{(waktu%60) >= 10 ? waktu%60 : '0'+(waktu%60)}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Separate container for the timer/resend button */}
+                        <div className="flex justify-end">
+                            {ctoken === "0000000000000000" ? (
+                            <button
+                                type="button"
+                                className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                                onClick={() => tokenSend(nohp)}
+                            >
+                                Kirim Ulang OTP
+                            </button>
+                            ) : ''}
                         </div>
                     </div>
                 )}
-
-                {/* Password Field */}
-                <div className="mb-6">
-                    <div className="flex items-center bg-gray-800/80 rounded-lg p-3 mb-1 border border-gray-700/50 focus-within:border-blue-500/50 transition">
-                    <Lock className="text-blue-400 mr-2" size={20} />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="bg-transparent border-none outline-none w-full text-white"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    </div>
-                    {isLogin && (
-                    <div className="text-right">
-                        <a href="#forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
-                        Forgot password?
-                        </a>
-                    </div>
-                    )}
-                </div>
 
                 {/* Submit Button */}
                 <button

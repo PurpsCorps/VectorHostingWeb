@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Server, HardDrive, Globe, Clock, CreditCard, Bell, Settings, LogOut, BarChart2, Shield, Activity } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ServicesPage from './ServicesPage';
 
 const ClientPanel = () => {
     const [services, setServices] = useState([]);
@@ -60,10 +61,6 @@ const ClientPanel = () => {
 
     const handleSelectNew = () => {
         navigate('/product');
-    };
-
-    const handleSelectManage = () => {
-        window.location.href = 'https://panel.vector-hosting.com';
     };
 
     const renderStatusBadge = (status) => {
@@ -173,7 +170,8 @@ const ClientPanel = () => {
                                                         <div className="flex items-center">
                                                             <div className="p-2 rounded bg-gray-800">
                                                                 {service.type === 'vps' && <Server size={20} className="text-blue-400" />}
-                                                                {service.type === 'hosting' && <Globe size={20} className="text-purple-400" />}
+                                                                {service.type === 'domain' && <Globe size={20} className="text-blue-400" />}
+                                                                {service.type === 'hosting' && <Server size={20} className="text-purple-400" />}
                                                                 {service.type === 'storage' && <HardDrive size={20} className="text-green-400" />}
                                                             </div>
                                                             <div className="ml-3">
@@ -187,14 +185,16 @@ const ClientPanel = () => {
                                                     <td className="py-4 px-4">
                                                         {renderStatusBadge(service.status)}
                                                     </td>
-                                                    <td className="py-4 px-4 text-right">
-                                                        <button onClick={handleSelectManage} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-sm transition mr-2">
-                                                            Manage
-                                                        </button>
-                                                        <button className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg text-sm transition">
-                                                            Renew
-                                                        </button>
-                                                    </td>
+                                                    {service.status === "active" && (
+                                                        <td className="py-4 px-4 text-right">
+                                                            <button onClick={() => setActiveTab('services')} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-sm transition mr-2">
+                                                                Manage
+                                                            </button>
+                                                            <button className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg text-sm transition">
+                                                                Renew
+                                                            </button>
+                                                        </td>
+                                                    )}
                                                 </tr>
                                             ))
                                         )}
@@ -212,49 +212,49 @@ const ClientPanel = () => {
                                     <div>
                                         <div className="flex justify-between mb-1">
                                             <span className="text-gray-300 text-sm">CPU Usage</span>
-                                            <span className="text-blue-400 text-sm font-medium">48%</span>
+                                            <span className="text-blue-400 text-sm font-medium">0%</span>
                                         </div>
                                         <div className="w-full bg-gray-800 rounded-full h-2">
-                                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '48%' }}></div>
+                                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '0%' }}></div>
                                         </div>
                                     </div>
 
                                     <div>
                                         <div className="flex justify-between mb-1">
                                             <span className="text-gray-300 text-sm">Memory Usage</span>
-                                            <span className="text-purple-400 text-sm font-medium">72%</span>
+                                            <span className="text-purple-400 text-sm font-medium">0%</span>
                                         </div>
                                         <div className="w-full bg-gray-800 rounded-full h-2">
-                                            <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full" style={{ width: '72%' }}></div>
+                                            <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full" style={{ width: '0%' }}></div>
                                         </div>
                                     </div>
 
                                     <div>
                                         <div className="flex justify-between mb-1">
                                             <span className="text-gray-300 text-sm">Disk Usage</span>
-                                            <span className="text-indigo-400 text-sm font-medium">35%</span>
+                                            <span className="text-indigo-400 text-sm font-medium">0%</span>
                                         </div>
                                         <div className="w-full bg-gray-800 rounded-full h-2">
-                                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full" style={{ width: '35%' }}></div>
+                                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full" style={{ width: '0%' }}></div>
                                         </div>
                                     </div>
 
                                     <div>
                                         <div className="flex justify-between mb-1">
                                             <span className="text-gray-300 text-sm">Bandwidth</span>
-                                            <span className="text-green-400 text-sm font-medium">19%</span>
+                                            <span className="text-green-400 text-sm font-medium">0%</span>
                                         </div>
                                         <div className="w-full bg-gray-800 rounded-full h-2">
-                                            <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full" style={{ width: '19%' }}></div>
+                                            <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full" style={{ width: '0%' }}></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                            <div className="bg-gray-900/60 backdrop-blur-md rounded-md p-6 border border-gray-800/80 shadow-md">
                                 <h2 className="text-xl font-bold text-white mb-6">Recent Activity</h2>
 
-                                <div className="space-y-4">
+                                {/* <div className="space-y-4">
                                     <div className="flex items-start">
                                         <div className="p-2 rounded-full bg-blue-500/20 mr-3">
                                             <Activity size={16} className="text-blue-400" />
@@ -284,7 +284,7 @@ const ClientPanel = () => {
                                             <p className="text-gray-400 text-xs">3 days ago</p>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <button className="w-full mt-6 text-blue-400 text-sm hover:text-blue-300 transition">
                                     View All Activity
@@ -295,10 +295,11 @@ const ClientPanel = () => {
                 );
             case 'services':
                 return (
-                    <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
-                        <h2 className="text-xl font-bold text-white mb-6">Your Services</h2>
-                        <p className="text-gray-400">Detailed services panel would be shown here.</p>
-                    </div>
+                    // <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                    //     <h2 className="text-xl font-bold text-white mb-6">Your Services</h2>
+                    //     <p className="text-gray-400">Detailed services panel would be shown here.</p>
+                    // </div>
+                    <ServicesPage/>
                 );
             case 'billing':
                 return (

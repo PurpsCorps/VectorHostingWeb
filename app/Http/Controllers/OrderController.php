@@ -49,7 +49,9 @@ class OrderController extends Controller
                 'target' => '08973966207',
                 'message' => '*Orderan Baru Masuk*
 #' . $request->order_id . '
-Silahkan menuju ke Admin Dashboard untuk memerika bukti pembayaran!'
+
+Silahkan menuju ke Admin Dashboard untuk memerika bukti pembayaran!
+https://vector-hosting.com/admin'
             ),
             CURLOPT_HTTPHEADER => array(
                 'Authorization: ' . env('WA_TOKEN') //change TOKEN to your actual token
@@ -75,12 +77,13 @@ Silahkan menuju ke Admin Dashboard untuk memerika bukti pembayaran!'
                 'message' => '*Orderan Anda Telah Kami Terima*
 *Order ID:* #' . $request->order_id . '
 *Subtotal:* Rp. ' . $request->subtotal . '
+
 *Mohon menunggu Admin untuk Persetujuan Pembayaran!*
 
-Selalu Pantau Order Status mu di
+Selalu Pantau Status Order mu di
 https://vector-hosting.com/client
 
-**Terima Kasih Sudah Berbelanja.**'
+*Terima Kasih Sudah Berbelanja.*'
             ),
             CURLOPT_HTTPHEADER => array(
                 'Authorization: ' . env('WA_TOKEN') //change TOKEN to your actual token
