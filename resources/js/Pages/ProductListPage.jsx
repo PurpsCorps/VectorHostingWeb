@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '@/Components/Footer';
 import ProductShow from '@/Components/ProductShow';
 
 const ProductListPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
+
+  useEffect(() => {
+      document.title = "Product - Vector Hosting – Layanan hosting berkualitas dengan kecepatan tinggi dan harga terjangkau. Accelerate with Precision untuk performa terbaik website Anda.";
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">

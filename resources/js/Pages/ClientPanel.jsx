@@ -3,6 +3,7 @@ import { User, Server, HardDrive, Globe, Clock, CreditCard, Bell, Settings, LogO
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ServicesPage from './ServicesPage';
+import BillingPage from './BillingPage';
 
 const ClientPanel = () => {
     const [services, setServices] = useState([]);
@@ -34,13 +35,16 @@ const ClientPanel = () => {
                 const response = await axios.get(`/api/services/${userObj.id}/`, {
                     headers: {'X-Requested': import.meta.env.VITE_API_KEY}
                 });
+                const response2 = await axios.get(`/api/invoices/${userObj.id}/`, {
+                    headers: {'X-Requested': import.meta.env.VITE_API_KEY}
+                });
 
                 setServices(response.data);
                 // Calculate stats
                 setStats({
                     activeServices: response.data.filter(service => service.status === 'active').length,
                     totalServices: response.data.length,
-                    upcomingInvoices: 0, // This would come from another API call in a real app
+                    upcomingInvoices: response2.data.filter(invoice => invoice.status === 'unpaid').length, // This would come from another API call in a real app
                     tickets: 0 // This would come from another API call in a real app
                 });
 
@@ -303,10 +307,11 @@ const ClientPanel = () => {
                 );
             case 'billing':
                 return (
-                    <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
-                        <h2 className="text-xl font-bold text-white mb-6">Billing & Invoices</h2>
-                        <p className="text-gray-400">Billing information and invoice history would be shown here.</p>
-                    </div>
+                    // <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                    //     <h2 className="text-xl font-bold text-white mb-6">Billing & Invoices</h2>
+                    //     <p className="text-gray-400">Billing information and invoice history would be shown here.</p>
+                    // </div>
+                    <BillingPage/>
                 );
             case 'support':
                 return (

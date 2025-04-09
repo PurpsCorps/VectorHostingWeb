@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentProofController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,3 +23,4 @@ Route::apiResource('token', TokenController::class)->middleware('auth.session');
 Route::apiResource('order', OrderController::class)->middleware('auth.session');
 Route::apiResource('payment/proof', PaymentProofController::class)->middleware('auth.session');
 Route::apiResource('services', ServicesController::class)->middleware('auth.session');
+Route::apiResource('invoices', InvoiceController::class)->middleware('auth.session');

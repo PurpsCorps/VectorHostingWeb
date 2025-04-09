@@ -126,14 +126,14 @@ const ServicesPage = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Header Area */}
-          <div className="text-center mb-8">
+          {/* <div className="text-center mb-8">
             <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500">
               Your Services
             </h1>
             <p className="text-gray-300 mt-2">
               Control Service mu dari panel ini.
             </p>
-          </div>
+          </div> */}
 
           {/* Search Bar */}
           <div className="mb-8">
@@ -199,7 +199,7 @@ const ServicesPage = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg text-white">{service.name}</h3>
-                      <p className="text-blue-400">{service.type?.toUpperCase()}</p>
+                      <p className="text-blue-400">{service.type?.charAt(0).toUpperCase() + service.type?.slice(1)}</p>
                     </div>
                   </div>
 

@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Zap, Shield, Clock, DollarSign, MessageSquare, ArrowRight } from 'lucide-react';
 
 const AboutUsPage = () => {
+  useEffect(() => {
+    document.title = "About Us - Vector Hosting – Layanan hosting berkualitas dengan kecepatan tinggi dan harga terjangkau. Accelerate with Precision untuk performa terbaik website Anda.";
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col justify-center relative overflow-hidden pt-20">
       {/* Enhanced Background Gradient - Same as LoginPage */}
@@ -28,7 +32,7 @@ const AboutUsPage = () => {
           {/* Header Section */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500 mb-4">
-              About VectorHosting
+              About Vector Hosting
             </h1>
             <div className="h-1 w-24 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full mb-6"></div>
           </div>

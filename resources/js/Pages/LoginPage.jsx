@@ -40,6 +40,8 @@ const LoginPage = () => {
     };
 
     useEffect(() => {
+        document.title = "Login - Vector Hosting – Layanan hosting berkualitas dengan kecepatan tinggi dan harga terjangkau. Accelerate with Precision untuk performa terbaik website Anda.";
+
         fetchUsers();
     }, []);
 
