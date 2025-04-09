@@ -9,9 +9,19 @@ import {
 } from 'lucide-react';
 import Footer from '@/Components/Footer';
 import ProductCompponent from '@/Components/ProductCompponent';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
   const [activeTab, setActiveTab] = useState('shared');
+  const navigate = useNavigate();
+
+  const handleCTA = (A) => {
+    if (A === 1) {
+      navigate('/product');
+    } else {
+      navigate('/about-us');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
@@ -42,10 +52,10 @@ const LandingPage = () => {
             Kami mengintegrasikan nilai kecepatan, kualitas, dan harga terjangkau untuk mendukung pertumbuhan digital pelanggan secara optimal, menjadikannya pilihan tepat bagi mereka yang mengutamakan efisiensi dan keandalan.
             </p>
             <div className="flex flex-col sm:flex-row justify-center sm:space-x-6 space-y-4 sm:space-y-0">
-              <button className="bg-blue-600 px-8 sm:px-10 py-3 sm:py-4 rounded-full text-base sm:text-lg hover:bg-blue-700 transition transform hover:scale-105 shadow-xl shadow-blue-500/30">
+              <button onClick={() => handleCTA(1)} className="bg-blue-600 px-8 sm:px-10 py-3 sm:py-4 rounded-full text-base sm:text-lg hover:bg-blue-700 transition transform hover:scale-105 shadow-xl shadow-blue-500/30">
                 Dapatkan Hosting Sekarang
               </button>
-              <button className="border-2 border-gray-700 px-8 sm:px-10 py-3 sm:py-4 rounded-full text-base sm:text-lg hover:bg-gray-800 transition transform hover:scale-105">
+              <button onClick={() => handleCTA(2)} className="border-2 border-gray-700 px-8 sm:px-10 py-3 sm:py-4 rounded-full text-base sm:text-lg hover:bg-gray-800 transition transform hover:scale-105">
                 Lihat Fitur Lengkap
               </button>
             </div>

@@ -124,7 +124,7 @@ const BillingPage = () => {
   const getUpcomingTotal = () => {
     return invoices
       .filter(invoice => invoice.status === 'unpaid')
-      .reduce((total, invoice) => total + parseFloat(invoice.amount), 0);
+      .reduce((total, invoice) => total + parseFloat(invoice.amount).toLocaleString(), 0);
   };
 
   // Get nearest upcoming due date
@@ -262,7 +262,7 @@ const BillingPage = () => {
 
                         <div className="flex items-center mt-4 md:mt-0">
                           <div className="mr-6 text-right md:text-left">
-                            <p className="text-white font-medium">Rp{parseFloat(invoice.amount)}</p>
+                            <p className="text-white font-medium">Rp{parseFloat(invoice.amount).toLocaleString()}</p>
                             <p className="text-gray-400 text-sm">Due: {formatDate(invoice.due_date)}</p>
                           </div>
                           <div className="flex items-center">
@@ -283,11 +283,11 @@ const BillingPage = () => {
                             <div className="space-y-2">
                               <div className="flex justify-between">
                                 <p className="text-gray-400">{invoice.description}</p>
-                                <p className="text-white">Rp{parseFloat(invoice.amount)}</p>
+                                <p className="text-white">Rp{parseFloat(invoice.amount).toLocaleString()}</p>
                               </div>
                               <div className="pt-2 border-t border-gray-700/50 flex justify-between">
                                 <p className="font-medium text-gray-300">Total</p>
-                                <p className="font-medium text-white">${parseFloat(invoice.amount)}</p>
+                                <p className="font-medium text-white">Rp{parseFloat(invoice.amount).toLocaleString()}</p>
                               </div>
                             </div>
 
@@ -355,7 +355,7 @@ const BillingPage = () => {
                               <p className="text-gray-400 text-sm">{formatDate(invoice.created_at)}</p>
                             </div>
                             <div className="text-right">
-                              <p className="text-white font-medium">${parseFloat(invoice.amount)}</p>
+                              <p className="text-white font-medium">Rp{parseFloat(invoice.amount).toLocaleString()}</p>
                               <div className="flex items-center justify-end mt-1">
                                 {renderInvoiceStatus(invoice.status)}
                                 <button
