@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, ChevronRight, AlertCircle, Check, Trash, Plus, Minus, Upload, Search } from 'lucide-react';
 import axios from 'axios';
-import { useCart } from '../Pages/CartContext';  // Import the hook
+import { useCart } from '../Pages/CartContext';
 
 const CartCheckoutPage = () => {
     const { updateCartCount } = useCart();
@@ -10,7 +10,7 @@ const CartCheckoutPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [sukses, setSukses] = useState('');
-    const [step, setStep] = useState(1); // 1: Cart Review, 2: Payment, 3: Confirmation
+    const [step, setStep] = useState(1);
     const [paymentMethod, setPaymentMethod] = useState('');
     const [orderid, setOrderID] = useState('');
     const [saldo, setSaldo] = useState();
@@ -27,19 +27,16 @@ const CartCheckoutPage = () => {
         return "Vector-" + Math.floor(100000 + Math.random() * 900000);
     }
 
-    // Handle file selection
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Check file type
         const fileType = file.type;
         if (!fileType.match(/image\/(jpeg|jpg|png)/)) {
             setError('Please upload only JPG or PNG images');
             return;
         }
 
-        // Check file size (max 2MB)
         if (file.size > 2 * 1024 * 1024) {
             setError('File size should be less than 2MB');
             return;
@@ -47,7 +44,6 @@ const CartCheckoutPage = () => {
 
         setPaymentProof(file);
 
-        // Create preview
         const reader = new FileReader();
         reader.onload = () => {
             setPreviewUrl(reader.result);
@@ -63,7 +59,6 @@ const CartCheckoutPage = () => {
             [productId]: domain
         }));
 
-        // Reset domain status when changing domain value
         setDomainStatus(prev => ({
             ...prev,
             [productId]: null
@@ -86,10 +81,8 @@ const CartCheckoutPage = () => {
                 [productId]: true
             }));
 
-            // Make API call to check domain availability
             const response = await axios.get(`https://domain-availability.whoisxmlapi.com/api/v1?apiKey=at_MR3M6e05rCgzwppHzULZ4NaD4ltT6&domainName=${domain}&credits=DA`);
 
-            // Update domain status
             response.data.DomainInfo.domainAvailability === "AVAILABLE" ? setDomainError(0) : setDomainError(1);
 
             setDomainStatus(prev => ({
@@ -107,7 +100,6 @@ const CartCheckoutPage = () => {
         }
     };
 
-    // Handle file upload
     const handleUpload = async () => {
         if (!paymentProof) {
             setError('Please select a file first');
@@ -131,7 +123,6 @@ const CartCheckoutPage = () => {
             const formData = new FormData();
             formData.append('payment_proof', paymentProof, encodeURIComponent(paymentProof.name));
 
-            // Alternatively, sanitize the filename
             const sanitizedFilename = paymentProof.name.replace(/[^\x00-\x7F]/g, "");
             formData.append('payment_proof', paymentProof, sanitizedFilename);
             formData.append('order_id', orderid? orderid : oid);
@@ -150,9 +141,6 @@ const CartCheckoutPage = () => {
                 setPaymentProofURL(response.data.filename);
                 setUploadStatus('success');
                 setSukses('Payment proof uploaded successfully! You can proceed to checkout.');
-                // setTimeout(() => {
-                //     handleCheckout();
-                // }, 1500);
             } else {
                 throw new Error(response.data.message || 'Upload failed');
             }
@@ -167,7 +155,6 @@ const CartCheckoutPage = () => {
     useEffect(() => {
         const fetchData = async () => {
         try {
-            // Check if user is logged in
             const userSession = sessionStorage.getItem('user');
             if (!userSession) {
                 window.location.href = '/login';
@@ -181,7 +168,6 @@ const CartCheckoutPage = () => {
             setSaldo(response.data.saldo);
             setIsLoading(true);
 
-            // Fetch cart data
             const cartResponse = await axios.get(`/api/cart/${user.id}/`, {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             });
@@ -190,7 +176,6 @@ const CartCheckoutPage = () => {
             cartData = JSON.parse(cartData.cart);
 
 
-            // Fetch product details for all product IDs in cart
             const productIds = cartData.map(item => item.product_id);
             const uniqueProductIds = [...new Set(productIds)];
 
@@ -231,14 +216,11 @@ const CartCheckoutPage = () => {
 
             const user = JSON.parse(userSession);
 
-            // Update local state first for responsive UI
             setCartItems(prevItems => {
-                // Buat salinan array yang diperbarui
                 const updatedItems = prevItems.map(item =>
                     item.product_id === productId ? {...item, qty: newQuantity} : item
                 );
 
-                // Gunakan updatedItems langsung untuk mengirim ke server
                 setTimeout(async function() {
                 await axios.patch(`/api/cart/${user.id}`, {
                     cart: JSON.stringify(updatedItems),
@@ -247,7 +229,6 @@ const CartCheckoutPage = () => {
                 });
                 }, 1000);
 
-                // Kembalikan nilai untuk pembaruan state
                 return updatedItems;
             });
         } catch (err) {
@@ -264,10 +245,8 @@ const CartCheckoutPage = () => {
         const user = JSON.parse(userSession);
         setIsLoading(true);
 
-        // Update local state for responsive UI
         setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
 
-        // Remove from server
         await axios.delete(`/api/cart/${user.id}/remove/${productId}/`, {
             headers: {'X-Requested': import.meta.env.VITE_API_KEY}
         });
@@ -327,7 +306,6 @@ const CartCheckoutPage = () => {
             });
             setSaldo(response.data.saldo);
 
-            // Format order items
             const orderItems = cartItems.map(item => ({
                 product_id: item.product_id,
                 quantity: item.qty,
@@ -355,7 +333,6 @@ const CartCheckoutPage = () => {
                 }
             }
 
-            // Create order object
             const order = {
                 order_id: orderid? orderid : oid,
                 user_id: user.id,
@@ -396,7 +373,6 @@ const CartCheckoutPage = () => {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             });
 
-            // Clear cart
             await axios.patch(`/api/cart/${user.id}`, {order: 1, cart: '[]'}, {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             });
@@ -405,7 +381,6 @@ const CartCheckoutPage = () => {
                 headers: {'X-Requested': import.meta.env.VITE_API_KEY}
             });
 
-            // Show success message and move to confirmation step
             setSukses('Order placed successfully!');
             updateCartCount(0);
             setStep(3);
@@ -417,7 +392,6 @@ const CartCheckoutPage = () => {
         }
     };
 
-    // Skeleton Component for Cart Items
     const CartItemSkeleton = () => (
         <div className="flex items-center justify-between py-4 border-b border-gray-800 animate-pulse">
         <div className="flex items-center">
@@ -434,7 +408,6 @@ const CartCheckoutPage = () => {
         </div>
     );
 
-    // Skeleton Component for Order Summary
     const SummarySkeleton = () => (
         <div className="space-y-2 mb-4 animate-pulse">
         <div className="flex justify-between">
@@ -448,7 +421,6 @@ const CartCheckoutPage = () => {
         </div>
     );
 
-    // Payment Method Skeleton
     const PaymentMethodSkeleton = () => (
         <div className="space-y-4 animate-pulse">
         <div className="p-4 rounded-lg border border-gray-700 bg-gray-800/50">
@@ -568,7 +540,6 @@ const CartCheckoutPage = () => {
                         </div>
                     </div>
 
-                    {/* Domain input field for hosting products */}
                     {product.category === "hosting" && (
                         <div className="mt-3 pl-20">
                             <div className="flex flex-col">
@@ -588,7 +559,6 @@ const CartCheckoutPage = () => {
                         </div>
                     )}
 
-                    {/* Domain input field with availability check for domain products */}
                     {product.category === "domain" && (
                         <div className="mt-3 pl-20">
                             <div className="flex flex-col">
@@ -618,7 +588,6 @@ const CartCheckoutPage = () => {
                                     </button>
                                 </div>
 
-                                {/* Domain availability status */}
                                 {domainStatus[item.product_id] && (
                                     <div className={`mt-2 py-2 px-3 rounded ${
                                         domainStatus[item.product_id].domainAvailability === "AVAILABLE"
@@ -795,7 +764,7 @@ const CartCheckoutPage = () => {
 
                     <div className={`border-2 border-dashed rounded-lg p-6 text-center ${
                         previewUrl ? 'border-blue-500' : 'border-gray-600'
-                    } transition-all duration-200 hover:border-blue-400 relative`}>  {/* Added relative positioning */}
+                    } transition-all duration-200 hover:border-blue-400 relative`}>
 
                         {!previewUrl ? (
                             <>
@@ -938,16 +907,13 @@ const CartCheckoutPage = () => {
         </div>
     );
 
-    // Full Page Loading Skeleton for initial load
     const FullPageSkeleton = () => (
         <div className="max-w-4xl mx-auto animate-pulse">
-        {/* Header Area */}
         <div className="text-center mb-8">
             <div className="h-8 bg-gray-700 rounded w-48 mx-auto mb-2"></div>
             <div className="h-4 bg-gray-700 rounded w-64 mx-auto"></div>
         </div>
 
-        {/* Step Indicator */}
         <div className="flex items-center justify-center mb-8">
             {[1, 2, 3].map((num) => (
             <div key={num} className="flex items-center">
@@ -957,7 +923,6 @@ const CartCheckoutPage = () => {
             ))}
         </div>
 
-        {/* Main Content */}
         <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-8 border border-gray-800/80 shadow-xl shadow-blue-900/20">
             <div className="h-6 bg-gray-700 rounded w-36 mb-6"></div>
             <div className="space-y-6">
@@ -979,17 +944,13 @@ const CartCheckoutPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-950 text-white flex flex-col justify-center relative overflow-hidden pt-20 pb-12">
-        {/* Enhanced Background Gradient */}
         <div className="absolute inset-0">
-            {/* Primary gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-indigo-900/20"></div>
 
-            {/* Animated glow spots */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
             <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
             <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl"></div>
 
-            {/* Subtle grid overlay */}
             <div className="absolute inset-0 opacity-20"
             style={{
                 backgroundImage: 'linear-gradient(to right, #132f4c 1px, transparent 1px), linear-gradient(to bottom, #132f4c 1px, transparent 1px)',
@@ -1014,7 +975,6 @@ const CartCheckoutPage = () => {
 
         <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-4xl mx-auto">
-            {/* Header Area */}
             <div className="text-center mb-8">
                 <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500">
                 Checkout
@@ -1024,10 +984,8 @@ const CartCheckoutPage = () => {
                 </p>
             </div>
 
-            {/* Step Indicator */}
             {renderStepIndicator()}
 
-            {/* Step Content */}
             <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-8 border border-gray-800/80 shadow-xl shadow-blue-900/20">
                 {step === 1 && renderCartReview()}
                 {step === 2 && renderPaymentForm()}

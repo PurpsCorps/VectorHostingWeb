@@ -11,9 +11,6 @@ const ProductListPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      {/* Header */}
-      {/* <Navbar /> */}
-
       <section className="relative pt-40 pb-40 px-6 text-center bg-gradient-to-b from-blue-900/50 via-gray-900 to-gray-950">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-900/50 via-gray-900/80 to-gray-950"></div>
         <div className="relative z-10">
@@ -23,7 +20,6 @@ const ProductListPage = () => {
           </p>
         </div>
 
-        {/* Decorative wave effect at the bottom of the hero */}
         <div className="absolute bottom-0 left-0 right-0 overflow-hidden">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-16 text-gray-950">
             <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.32,118.92,119.09,102.34,181,79.36,232,61.12,273.88,47.79,321.39,56.44Z" fill="currentColor"></path>
@@ -31,7 +27,6 @@ const ProductListPage = () => {
         </div>
       </section>
 
-      {/* Product Categories - Updated for better responsiveness */}
       <div className="w-full max-w-6xl mx-auto px-4 mb-8 relative z-10">
         <div className="flex flex-wrap justify-center gap-3 py-4 sm:flex-nowrap sm:overflow-x-auto sm:justify-start sm:space-x-4 sm:gap-0 md:justify-center">
           <button
@@ -69,13 +64,10 @@ const ProductListPage = () => {
         </div>
       </div>
 
-      {/* Gradient background for product section */}
       <div className="bg-gradient-to-b from-gray-950 to-gray-950 pb-16">
-        {/* Product List */}
         <ProductShow activeCategory={activeCategory} />
       </div>
 
-      {/* Features */}
       <section className="bg-gradient-to-b from-gray-950 to-gray-950 py-16 border-t border-gray-950">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-white">Keunggulan Berbelanja dengan Kami</h2>
@@ -120,7 +112,6 @@ const ProductListPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

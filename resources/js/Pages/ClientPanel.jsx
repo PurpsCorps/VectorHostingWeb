@@ -19,7 +19,6 @@ const ClientPanel = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Get user from session storage
         const userInfo = sessionStorage.getItem('user');
         if (!userInfo) {
             window.location.href = '/login';
@@ -28,7 +27,6 @@ const ClientPanel = () => {
 
         setUser(JSON.parse(userInfo));
 
-        // Fetch user services
         const fetchData = async () => {
             try {
                 const userObj = JSON.parse(userInfo);
@@ -40,12 +38,11 @@ const ClientPanel = () => {
                 });
 
                 setServices(response.data);
-                // Calculate stats
                 setStats({
                     activeServices: response.data.filter(service => service.status === 'active').length,
                     totalServices: response.data.length,
-                    upcomingInvoices: response2.data.filter(invoice => invoice.status === 'unpaid').length, // This would come from another API call in a real app
-                    tickets: 0 // This would come from another API call in a real app
+                    upcomingInvoices: response2.data.filter(invoice => invoice.status === 'unpaid').length,
+                    tickets: 0
                 });
 
                 setLoading(false);
@@ -87,7 +84,6 @@ const ClientPanel = () => {
             case 'dashboard':
                 return (
                     <div className="space-y-8">
-                        {/* Stats Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
                                 <div className="flex items-center">
@@ -138,7 +134,6 @@ const ClientPanel = () => {
                             </div>
                         </div>
 
-                        {/* Services Table */}
                         <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-bold text-white">Your Services</h2>
@@ -207,7 +202,6 @@ const ClientPanel = () => {
                             </div>
                         </div>
 
-                        {/* Server Status */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="md:col-span-2 bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
                                 <h2 className="text-xl font-bold text-white mb-6">System Status</h2>
@@ -299,18 +293,10 @@ const ClientPanel = () => {
                 );
             case 'services':
                 return (
-                    // <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
-                    //     <h2 className="text-xl font-bold text-white mb-6">Your Services</h2>
-                    //     <p className="text-gray-400">Detailed services panel would be shown here.</p>
-                    // </div>
                     <ServicesPage/>
                 );
             case 'billing':
                 return (
-                    // <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
-                    //     <h2 className="text-xl font-bold text-white mb-6">Billing & Invoices</h2>
-                    //     <p className="text-gray-400">Billing information and invoice history would be shown here.</p>
-                    // </div>
                     <BillingPage/>
                 );
             case 'support':
@@ -334,17 +320,13 @@ const ClientPanel = () => {
 
     return (
         <div className="min-h-screen bg-gray-950 text-white flex relative overflow-hidden pt-20">
-            {/* Enhanced Background Gradient */}
             <div className="absolute inset-0">
-                {/* Primary gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-indigo-900/20"></div>
 
-                {/* Animated glow spots */}
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl"></div>
 
-                {/* Subtle grid overlay */}
                 <div className="absolute inset-0 opacity-20"
                     style={{
                     backgroundImage: 'linear-gradient(to right, #132f4c 1px, transparent 1px), linear-gradient(to bottom, #132f4c 1px, transparent 1px)',
@@ -353,16 +335,13 @@ const ClientPanel = () => {
                 </div>
             </div>
 
-            {/* Sidebar - Fixed position */}
             <div className="w-64 h-screen fixed top-20 left-0 bg-gray-900/80 backdrop-blur-xl border-r border-gray-800/50 p-6 flex flex-col z-10">
-                {/* Logo */}
                 <div className="mb-10">
                     <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500">
                         Client Panel
                     </h1>
                 </div>
 
-                {/* Navigation */}
                 <nav className="flex-grow">
                     <ul className="space-y-2">
                         <li>
@@ -433,7 +412,6 @@ const ClientPanel = () => {
                     </ul>
                 </nav>
 
-                {/* User Info & Logout */}
                 <div className="mt-auto pt-6 border-t border-gray-800/50">
                     {user && (
                         <div className="flex items-center mb-4">
@@ -456,9 +434,7 @@ const ClientPanel = () => {
                 </div>
             </div>
 
-            {/* Main Content - Added left margin to avoid content being hidden behind sidebar */}
             <div className="flex-grow p-8 overflow-auto ml-64">
-                {/* Header */}
                 <header className="mb-8">
                     <h1 className="text-3xl font-bold text-white">
                         {activeTab === 'dashboard' && 'Dashboard'}
@@ -476,7 +452,6 @@ const ClientPanel = () => {
                     </p>
                 </header>
 
-                {/* Main Content Area */}
                 {renderTabContent()}
             </div>
         </div>

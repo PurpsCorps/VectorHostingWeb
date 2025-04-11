@@ -25,12 +25,8 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
-      {/* Navbar */}
-      {/* <Navbar /> */}
 
-      {/* Hero Section */}
       <div className="relative">
-        {/* Background Gradient and Blur - Responsive */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10
                          sm:w-full sm:h-full md:w-full md:h-full lg:w-full lg:h-full"></div>
@@ -40,7 +36,6 @@ const LandingPage = () => {
                          sm:w-1/4 sm:h-1/4 md:w-1/5 md:h-1/5 lg:w-1/6 lg:h-1/6"></div>
         </div>
 
-        {/* Konten Hero */}
         <div className="container mx-auto px-4 sm:px-6 pt-24 sm:pt-28 md:pt-32 pb-36 sm:pb-40 md:pb-48 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
@@ -60,7 +55,6 @@ const LandingPage = () => {
               </button>
             </div>
 
-            {/* Statistik Singkat */}
             <div className="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center">
               <div>
                 <div className="text-3xl sm:text-4xl font-bold text-blue-500 mb-2">99.9%</div>
@@ -78,7 +72,6 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Transisi Kurva */}
         <div className="absolute bottom-0 left-0 right-0 text-gray-950 w-full">
           <svg viewBox="0 0 1440 100" preserveAspectRatio="none" className="w-full h-16 sm:h-20 md:h-24">
             <path
@@ -89,7 +82,6 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Hosting Plans */}
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 bg-gray-950">
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">Pilih Paket Hosting</h2>
@@ -114,7 +106,6 @@ const LandingPage = () => {
         <ProductCompponent category={activeTab} />
       </div>
 
-      {/* Features Section */}
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 bg-gray-950">
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold">Mengapa Memilih Kami</h2>
@@ -154,7 +145,6 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Ensure Footer has proper background */}
       <div className="bg-gray-950">
         <Footer />
       </div>

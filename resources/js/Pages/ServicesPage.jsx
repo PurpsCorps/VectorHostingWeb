@@ -15,14 +15,12 @@ const ServicesPage = () => {
       try {
         setIsLoading(true);
 
-        // Check if user is logged in
         const userSession = sessionStorage.getItem('user');
         if (!userSession) {
           window.location.href = '/login';
           return;
         }
 
-        // Fetch services
         const userObj = JSON.parse(userSession);
         const servicesResponse = await axios.get(`/api/services/${userObj.id}`, {
           headers: {'X-Requested': import.meta.env.VITE_API_KEY}
@@ -30,7 +28,6 @@ const ServicesPage = () => {
 
         setServices(servicesResponse.data);
 
-        // Fetch or create categories from services
         const categoriesSet = new Set();
         servicesResponse.data.forEach(service => {
           if (service.type) {
@@ -50,7 +47,6 @@ const ServicesPage = () => {
     fetchData();
   }, []);
 
-  // Filter services based on selected category and search query
   const filteredServices = services.filter(service => {
     const matchesCategory = selectedCategory === 'all' || service.type === selectedCategory;
     const matchesSearch = service.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -58,7 +54,6 @@ const ServicesPage = () => {
     return matchesCategory && matchesSearch;
   });
 
-  // Get icon based on category
   const getCategoryIcon = (category) => {
     switch(category?.toLowerCase()) {
       case 'web development':
@@ -78,7 +73,6 @@ const ServicesPage = () => {
     }
   };
 
-  // Skeleton components
   const ServiceCardSkeleton = () => (
     <div className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-800/80 shadow-xl shadow-blue-900/20 animate-pulse">
       <div className="flex items-center mb-4">
@@ -102,7 +96,6 @@ const ServicesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col justify-center relative overflow-hidden pt-20 pb-12">
-      {/* Enhanced Background Gradient - Same as CartCheckoutPage */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-indigo-900/20"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
@@ -125,17 +118,15 @@ const ServicesPage = () => {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Header Area */}
-          {/* <div className="text-center mb-8">
+          <div className="text-center mb-8">
             <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500">
               Your Services
             </h1>
             <p className="text-gray-300 mt-2">
               Control Service mu dari panel ini.
             </p>
-          </div> */}
+          </div>
 
-          {/* Search Bar */}
           <div className="mb-8">
             <div className="relative max-w-md mx-auto">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -151,7 +142,6 @@ const ServicesPage = () => {
             </div>
           </div>
 
-          {/* Category Filter Tabs */}
           <div className="flex flex-wrap gap-2 mb-8 justify-center">
             {isLoading ? (
               Array(5).fill(0).map((_, index) => (
@@ -174,7 +164,6 @@ const ServicesPage = () => {
             )}
           </div>
 
-          {/* Services Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
               Array(6).fill(0).map((_, index) => (
@@ -192,7 +181,6 @@ const ServicesPage = () => {
                   key={service.id}
                   className="bg-gray-900/60 backdrop-blur-xl rounded-2xl p-6 border border-gray-800/80 shadow-xl shadow-blue-900/20 transition-all hover:shadow-2xl hover:shadow-blue-900/30 flex flex-col h-full"
                 >
-                  {/* Header dengan Icon dan Nama */}
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-700/30 mr-4">
                       {getCategoryIcon(service.type)}
@@ -203,7 +191,6 @@ const ServicesPage = () => {
                     </div>
                   </div>
 
-                  {/* Content - menggunakan flex-grow untuk mengisi ruang */}
                   <div className="flex-grow">
                     <p className="text-gray-300 line-clamp-3"><b>Order ID:</b> #{service.order_id}</p>
                     <p className="text-gray-300"><b>Domain:</b> {service.domain}</p>
@@ -224,7 +211,6 @@ const ServicesPage = () => {
                     )}
                   </div>
 
-                  {/* Footer dengan Status dan Button - selalu di bawah */}
                   <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-800">
                     <div className="flex items-center h-10">
                       <span className={`font-semibold px-3 py-2 rounded ${
@@ -257,7 +243,6 @@ const ServicesPage = () => {
             )}
           </div>
 
-          {/* Bottom CTA */}
           {!isLoading && filteredServices.length > 0 && (
             <div className="mt-12 text-center">
               <p className="text-gray-300 mb-4">Need a custom solution for your business?</p>

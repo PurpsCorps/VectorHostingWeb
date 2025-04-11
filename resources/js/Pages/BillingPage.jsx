@@ -7,22 +7,19 @@ const BillingPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('invoices');
   const [expandedInvoice, setExpandedInvoice] = useState(null);
-  const [filter, setFilter] = useState('all'); // all, paid, unpaid
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    // Get user from session storage
     const userInfo = sessionStorage.getItem('user');
     if (!userInfo) {
       window.location.href = '/login';
       return;
     }
 
-    // Fetch invoices
     const fetchData = async () => {
       try {
         const userObj = JSON.parse(userInfo);
 
-        // Fetch invoices
         const invoicesResponse = await axios.get(`/api/invoices/${userObj.id}/`, {
           headers: {'X-Requested': import.meta.env.VITE_API_KEY}
         });
@@ -31,7 +28,7 @@ const BillingPage = () => {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching billing data:', err);
-        // Set mock data in case of error for development purposes
+
         const mockInvoices = [
           {
             id: 1,
@@ -68,14 +65,12 @@ const BillingPage = () => {
   }, []);
 
   const handlePayInvoice = (invoiceId) => {
-    // In a real app, this would send a request to process payment
     const payInvoice = async () => {
       try {
         await axios.post(`/api/invoices/${invoiceId}/pay`, {
           headers: {'X-Requested': import.meta.env.VITE_API_KEY}
         });
 
-        // Update the invoice status locally
         setInvoices(invoices.map(invoice =>
           invoice.id === invoiceId ? {...invoice, status: 'paid', paid_at: new Date().toISOString()} : invoice
         ));
@@ -91,7 +86,6 @@ const BillingPage = () => {
   };
 
   const handleDownloadInvoice = (invoiceId) => {
-    // In a real app, this would download the invoice PDF
     window.open(`/api/invoices/${invoiceId}/pdf`, '_blank');
   };
 
@@ -127,7 +121,6 @@ const BillingPage = () => {
       .reduce((total, invoice) => total + parseFloat(invoice.amount).toLocaleString(), 0);
   };
 
-  // Get nearest upcoming due date
   const getNextDueDate = () => {
     const unpaidInvoices = invoices.filter(invoice => invoice.status === 'unpaid');
     if (unpaidInvoices.length === 0) return 'No upcoming';
@@ -139,7 +132,6 @@ const BillingPage = () => {
     return sortedDates[0];
   };
 
-  // Format date to be more readable
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     if (dateString === "No upcoming") return 'No upcoming';
@@ -149,7 +141,6 @@ const BillingPage = () => {
 
   return (
     <div className="space-y-8">
-      {/* Billing Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
           <div className="flex items-center">
@@ -192,7 +183,6 @@ const BillingPage = () => {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl border border-gray-800/80 shadow-lg overflow-hidden">
         <div className="flex border-b border-gray-800">
           <button

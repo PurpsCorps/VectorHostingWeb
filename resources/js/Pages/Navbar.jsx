@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
-import { useCart } from './CartContext';  // Import the hook
+import { useCart } from './CartContext';
 
 const Navbar = () => {
   const [users, setUsers] = useState();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { cartCount, updateCartCount } = useCart();  // Use context
+  const { cartCount, updateCartCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -28,7 +28,6 @@ const Navbar = () => {
 
           if (response.data.token == userFromSession.loginToken) {
             setUsers(response.data);
-            // Fetch cart items count when user is logged in
             fetchCartCount(userFromSession.id);
           }
         } catch (err) {
@@ -42,13 +41,12 @@ const Navbar = () => {
     checkUserSession();
   }, []);
 
-  // Function to fetch cart count for logged in use
   const fetchCartCount = async (userId) => {
     try {
       const response = await axios.get(`/api/cart/${userId}/`, {
         headers: {'X-Requested': import.meta.env.VITE_API_KEY}
       });
-      updateCartCount(response.data.count || 0);  // Update context
+      updateCartCount(response.data.count || 0);
     } catch (err) {
       console.error('Error fetching cart count:', err);
       updateCartCount(0);
@@ -57,12 +55,10 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Only close dropdown if clicking outside of dropdown AND outside of button
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
 
-      // Only close mobile menu if clicking outside both the menu AND the mobile button
       if (
         mobileMenuRef.current &&
         !mobileMenuRef.current.contains(event.target) &&
@@ -88,17 +84,14 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // Function to toggle mobile menu
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  // Function to close mobile menu
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
   };
 
-  // Default profile image if user has no avatar
   const defaultAvatar = "";
 
   return(
@@ -111,13 +104,11 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="hover:text-blue-500 transition">Home</Link>
             <Link to="/product" className="hover:text-blue-500 transition">Product</Link>
             <Link to="/about-us" className="hover:text-blue-500 transition">About Us</Link>
 
-            {/* Shopping Cart Icon - Only show when logged in */}
             {!isLoading && users ? (
               <Link to="/cart" className="relative hover:text-blue-500 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +122,6 @@ const Navbar = () => {
               </Link>
             ):''}
             {isLoading ? (
-              // Show loading state while determining user
               <div className="w-10 h-10 rounded-full bg-gray-700 animate-pulse"></div>
             ) : users ? (
               <div className="relative" ref={dropdownRef}>
@@ -189,7 +179,6 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             {!isLoading && users && (
               <Link to="/cart" className="relative mr-4 hover:text-blue-500 transition">
@@ -219,7 +208,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div
             ref={mobileMenuRef}
