@@ -148,7 +148,7 @@ const LoginPage = () => {
                 setWaktu(300);
                 setIsLogin(true);
             } else {
-                setError('Token Salah!');
+                setError('OTP Invalid!');
             }
         }
         } catch (err) {
