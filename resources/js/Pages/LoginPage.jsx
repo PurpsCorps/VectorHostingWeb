@@ -254,7 +254,7 @@ const LoginPage = () => {
                             className="bg-transparent border-none outline-none w-full text-white"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            required={!isLogin}
+                            required
                         />
                         </div>
                     </div>
