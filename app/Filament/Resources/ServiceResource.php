@@ -27,27 +27,51 @@ class ServiceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('type')
-                    ->required(),
-                Forms\Components\TextInput::make('domain')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('ip')
-                    ->maxLength(45),
-                Forms\Components\TextInput::make('plan')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('status')
-                    ->required(),
-                Forms\Components\DatePicker::make('renewal_date')
-                    ->required(),
-                Forms\Components\TextInput::make('server_id')
-                    ->numeric(),
+                Forms\Components\Section::make('Client Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('user_id')
+                            ->label('User ID')
+                            ->required()
+                            ->numeric(),
+                    ]),
+                Forms\Components\Section::make('Service Settings')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Service Name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('plan')
+                            ->required()
+                            ->maxLength(100),
+                        Forms\Components\TextInput::make('status')
+                            ->required(),
+                        Forms\Components\DatePicker::make('renewal_date')
+                            ->label('Renewal Date')
+                            ->required(),
+                        Forms\Components\TextInput::make('server_id')
+                            ->label('Server ID')
+                            ->numeric(),
+                    ]),
+                Forms\Components\Section::make('Product Settings')
+                    ->schema([
+                        Forms\Components\TextInput::make('type')
+                            ->required(),
+                        Forms\Components\TextInput::make('domain')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('ip')
+                            ->label('IP')
+                            ->maxLength(45),
+                    ]),
+                Forms\Components\Section::make('Panel Settings')
+                    ->schema([
+                        Forms\Components\TextInput::make('panel_username')
+                            ->label('Username Panel')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('panel_password')
+                            ->label('Password Panel')
+                            ->maxLength(255),
+                    ]),
+
             ]);
     }
 
