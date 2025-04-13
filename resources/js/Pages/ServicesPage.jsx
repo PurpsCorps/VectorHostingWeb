@@ -95,20 +95,7 @@ const ServicesPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col justify-center relative overflow-hidden pt-20 pb-12">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-indigo-900/20"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl"></div>
-        <div className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: 'linear-gradient(to right, #132f4c 1px, transparent 1px), linear-gradient(to bottom, #132f4c 1px, transparent 1px)',
-            backgroundSize: '20px 20px'
-          }}>
-        </div>
-      </div>
-
+    <div className="min-h-screen text-white flex flex-col justify-center relative overflow-hidden pt-20 pb-12">
       {error && (
         <div className="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded-md shadow-lg flex items-center z-20">
           <AlertCircle className="h-5 w-5 mr-2 text-red-500" />

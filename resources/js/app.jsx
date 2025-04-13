@@ -13,6 +13,7 @@ import NotFoundPage from './Pages/NotFoundPage';
 import CartCheckoutPage from './Pages/CartCheckoutPage';
 import AboutUsPage from './Pages/AboutUsPage';
 import ClientPanel from './Pages/ClientPanel';
+import WeddingInvitation from './Pages/WeddingInvitation';
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
@@ -30,6 +31,7 @@ if (rootElement) {
                         <Route path="cart" element={<CartCheckoutPage />} />
                         <Route path="about-us" element={<AboutUsPage />} />
                         <Route path="client" element={<ClientPanel />} />
+                        {/* <Route path="weeding" element={<WeddingInvitation />} /> */}
                         <Route path="*" element={<NotFoundPage />} />
                     </Route>
                 </Routes>

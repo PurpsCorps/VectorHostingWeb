@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Server, HardDrive, Globe, Clock, CreditCard, Bell, Settings, LogOut, BarChart2, Shield, Activity } from 'lucide-react';
+import { User, Server, HardDrive, Globe, Clock, CreditCard, Bell, Settings, LogOut, BarChart2, Shield, Activity, Menu, X } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ServicesPage from './ServicesPage';
@@ -16,6 +16,7 @@ const ClientPanel = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -64,6 +65,12 @@ const ClientPanel = () => {
         navigate('/product');
     };
 
+    // Close sidebar when clicking a link (for mobile)
+    const handleTabClick = (tab) => {
+        setActiveTab(tab);
+        setSidebarOpen(false);
+    };
+
     const renderStatusBadge = (status) => {
         const statusClasses = {
             active: "bg-green-500/20 text-green-400 border-green-500/30",
@@ -84,8 +91,8 @@ const ClientPanel = () => {
             case 'dashboard':
                 return (
                     <div className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                                 <div className="flex items-center">
                                     <div className="p-3 rounded-lg bg-blue-500/20">
                                         <Server className="text-blue-400" size={24} />
@@ -97,7 +104,7 @@ const ClientPanel = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                                 <div className="flex items-center">
                                     <div className="p-3 rounded-lg bg-purple-500/20">
                                         <Globe className="text-purple-400" size={24} />
@@ -109,7 +116,7 @@ const ClientPanel = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                                 <div className="flex items-center">
                                     <div className="p-3 rounded-lg bg-indigo-500/20">
                                         <CreditCard className="text-indigo-400" size={24} />
@@ -121,7 +128,7 @@ const ClientPanel = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                            <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                                 <div className="flex items-center">
                                     <div className="p-3 rounded-lg bg-green-500/20">
                                         <Bell className="text-green-400" size={24} />
@@ -134,17 +141,17 @@ const ClientPanel = () => {
                             </div>
                         </div>
 
-                        <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
-                            <div className="flex justify-between items-center mb-6">
+                        <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                                 <h2 className="text-xl font-bold text-white">Your Services</h2>
-                                <button onClick={handleSelectNew} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition">
+                                <button onClick={handleSelectNew} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition w-full sm:w-auto">
                                     Order New Service
                                 </button>
                             </div>
 
                             <div className="overflow-x-auto">
                                 <table className="w-full">
-                                    <thead>
+                                    <thead className="hidden sm:table-header-group">
                                         <tr className="border-b border-gray-800">
                                             <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Service</th>
                                             <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Plan</th>
@@ -164,8 +171,8 @@ const ClientPanel = () => {
                                             </tr>
                                         ) : (
                                             services.map((service, index) => (
-                                                <tr key={index} className="border-b border-gray-800/50 hover:bg-gray-800/30">
-                                                    <td className="py-4 px-4">
+                                                <tr key={index} className="border-b border-gray-800/50 hover:bg-gray-800/30 block sm:table-row mb-6 sm:mb-0">
+                                                    <td className="py-4 px-4 block sm:table-cell">
                                                         <div className="flex items-center">
                                                             <div className="p-2 rounded bg-gray-800">
                                                                 {service.type === 'vps' && <Server size={20} className="text-blue-400" />}
@@ -179,19 +186,28 @@ const ClientPanel = () => {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="py-4 px-4 text-white">{service.plan}</td>
-                                                    <td className="py-4 px-4 text-white">{service.renewal_date}</td>
-                                                    <td className="py-4 px-4">
+                                                    <td className="py-2 px-4 block sm:table-cell">
+                                                        <span className="sm:hidden text-gray-400 mr-2">Plan:</span>
+                                                        <span className="text-white">{service.plan}</span>
+                                                    </td>
+                                                    <td className="py-2 px-4 block sm:table-cell">
+                                                        <span className="sm:hidden text-gray-400 mr-2">Renewal:</span>
+                                                        <span className="text-white">{service.renewal_date}</span>
+                                                    </td>
+                                                    <td className="py-2 px-4 block sm:table-cell">
+                                                        <span className="sm:hidden text-gray-400 mr-2">Status:</span>
                                                         {renderStatusBadge(service.status)}
                                                     </td>
                                                     {service.status === "active" && (
-                                                        <td className="py-4 px-4 text-right">
-                                                            <button onClick={() => setActiveTab('services')} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-sm transition mr-2">
-                                                                Manage
-                                                            </button>
-                                                            <button className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg text-sm transition">
-                                                                Renew
-                                                            </button>
+                                                        <td className="py-4 px-4 block sm:table-cell text-left sm:text-right">
+                                                            <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
+                                                                <button onClick={() => handleTabClick('services')} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-sm transition">
+                                                                    Manage
+                                                                </button>
+                                                                <button className="bg-gray-700/50 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg text-sm transition">
+                                                                    Renew
+                                                                </button>
+                                                            </div>
                                                         </td>
                                                     )}
                                                 </tr>
@@ -202,8 +218,8 @@ const ClientPanel = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="md:col-span-2 bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2 bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                                 <h2 className="text-xl font-bold text-white mb-6">System Status</h2>
 
                                 <div className="space-y-4">
@@ -249,40 +265,8 @@ const ClientPanel = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-900/60 backdrop-blur-md rounded-md p-6 border border-gray-800/80 shadow-md">
+                            <div className="bg-gray-900/60 backdrop-blur-md rounded-md p-4 md:p-6 border border-gray-800/80 shadow-md">
                                 <h2 className="text-xl font-bold text-white mb-6">Recent Activity</h2>
-
-                                {/* <div className="space-y-4">
-                                    <div className="flex items-start">
-                                        <div className="p-2 rounded-full bg-blue-500/20 mr-3">
-                                            <Activity size={16} className="text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <p className="text-white text-sm">Server Restarted</p>
-                                            <p className="text-gray-400 text-xs">2 hours ago</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start">
-                                        <div className="p-2 rounded-full bg-purple-500/20 mr-3">
-                                            <Shield size={16} className="text-purple-400" />
-                                        </div>
-                                        <div>
-                                            <p className="text-white text-sm">Security Scan Completed</p>
-                                            <p className="text-gray-400 text-xs">Yesterday</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start">
-                                        <div className="p-2 rounded-full bg-green-500/20 mr-3">
-                                            <CreditCard size={16} className="text-green-400" />
-                                        </div>
-                                        <div>
-                                            <p className="text-white text-sm">Invoice Paid</p>
-                                            <p className="text-gray-400 text-xs">3 days ago</p>
-                                        </div>
-                                    </div>
-                                </div> */}
 
                                 <button className="w-full mt-6 text-blue-400 text-sm hover:text-blue-300 transition">
                                     View All Activity
@@ -301,14 +285,14 @@ const ClientPanel = () => {
                 );
             case 'support':
                 return (
-                    <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                    <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                         <h2 className="text-xl font-bold text-white mb-6">Support Tickets</h2>
                         <p className="text-gray-400">Support ticket system would be shown here.</p>
                     </div>
                 );
             case 'settings':
                 return (
-                    <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-6 border border-gray-800/80 shadow-lg">
+                    <div className="bg-gray-900/60 backdrop-blur-xl rounded-xl p-4 md:p-6 border border-gray-800/80 shadow-lg">
                         <h2 className="text-xl font-bold text-white mb-6">Account Settings</h2>
                         <p className="text-gray-400">Account settings would be shown here.</p>
                     </div>
@@ -319,14 +303,12 @@ const ClientPanel = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white flex relative overflow-hidden pt-20">
-            <div className="absolute inset-0">
+        <div className="min-h-screen bg-gray-950 text-white">
+            <div className="fixed inset-0 z-0">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-indigo-900/20"></div>
-
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl"></div>
-
                 <div className="absolute inset-0 opacity-20"
                     style={{
                     backgroundImage: 'linear-gradient(to right, #132f4c 1px, transparent 1px), linear-gradient(to bottom, #132f4c 1px, transparent 1px)',
@@ -334,19 +316,34 @@ const ClientPanel = () => {
                     }}>
                 </div>
             </div>
+            {/* Mobile header with menu toggle */}
+            <div className="fixed top-0 left-0 right-0 bg-gray-900/80 backdrop-blur-xl border-b border-gray-800/50 p-4 flex justify-between items-center z-30">
+                <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500">
+                    Client Panel
+                </h1>
+                <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="p-2 rounded-lg bg-gray-800/80 text-gray-300"
+                >
+                    {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+            </div>
 
-            <div className="w-64 h-screen fixed top-20 left-0 bg-gray-900/80 backdrop-blur-xl border-r border-gray-800/50 p-6 flex flex-col z-10">
-                <div className="mb-10">
+            {/* Sidebar - completely hidden on mobile unless toggled */}
+            <aside
+                className={`fixed inset-y-0 left-0 w-64 bg-gray-900/80 backdrop-blur-xl border-r border-gray-800/50 flex flex-col z-20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+            >
+                <div className="p-6 mb-2 mt-16">
                     <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-blue-400 to-indigo-500">
                         Client Panel
                     </h1>
                 </div>
 
-                <nav className="flex-grow">
+                <nav className="flex-grow px-4">
                     <ul className="space-y-2">
                         <li>
                             <button
-                                onClick={() => setActiveTab('dashboard')}
+                                onClick={() => handleTabClick('dashboard')}
                                 className={`flex items-center w-full px-4 py-3 rounded-lg transition ${
                                     activeTab === 'dashboard'
                                         ? 'bg-blue-600/20 text-blue-400'
@@ -359,7 +356,7 @@ const ClientPanel = () => {
                         </li>
                         <li>
                             <button
-                                onClick={() => setActiveTab('services')}
+                                onClick={() => handleTabClick('services')}
                                 className={`flex items-center w-full px-4 py-3 rounded-lg transition ${
                                     activeTab === 'services'
                                         ? 'bg-blue-600/20 text-blue-400'
@@ -372,7 +369,7 @@ const ClientPanel = () => {
                         </li>
                         <li>
                             <button
-                                onClick={() => setActiveTab('billing')}
+                                onClick={() => handleTabClick('billing')}
                                 className={`flex items-center w-full px-4 py-3 rounded-lg transition ${
                                     activeTab === 'billing'
                                         ? 'bg-blue-600/20 text-blue-400'
@@ -385,7 +382,7 @@ const ClientPanel = () => {
                         </li>
                         <li>
                             <button
-                                onClick={() => setActiveTab('support')}
+                                onClick={() => handleTabClick('support')}
                                 className={`flex items-center w-full px-4 py-3 rounded-lg transition ${
                                     activeTab === 'support'
                                         ? 'bg-blue-600/20 text-blue-400'
@@ -398,7 +395,7 @@ const ClientPanel = () => {
                         </li>
                         <li>
                             <button
-                                onClick={() => setActiveTab('settings')}
+                                onClick={() => handleTabClick('settings')}
                                 className={`flex items-center w-full px-4 py-3 rounded-lg transition ${
                                     activeTab === 'settings'
                                         ? 'bg-blue-600/20 text-blue-400'
@@ -412,7 +409,7 @@ const ClientPanel = () => {
                     </ul>
                 </nav>
 
-                <div className="mt-auto pt-6 border-t border-gray-800/50">
+                <div className="mt-auto p-6 border-t border-gray-800/50">
                     {user && (
                         <div className="flex items-center mb-4">
                             <div className="w-10 h-10 rounded-full bg-blue-600/30 flex items-center justify-center">
@@ -432,28 +429,39 @@ const ClientPanel = () => {
                         Logout
                     </button>
                 </div>
-            </div>
+            </aside>
 
-            <div className="flex-grow p-8 overflow-auto ml-64">
-                <header className="mb-8">
-                    <h1 className="text-3xl font-bold text-white">
-                        {activeTab === 'dashboard' && 'Dashboard'}
-                        {activeTab === 'services' && 'Your Services'}
-                        {activeTab === 'billing' && 'Billing & Invoices'}
-                        {activeTab === 'support' && 'Support Tickets'}
-                        {activeTab === 'settings' && 'Account Settings'}
-                    </h1>
-                    <p className="text-gray-400 mt-1">
-                        {activeTab === 'dashboard' && 'Overview of your hosting account'}
-                        {activeTab === 'services' && 'Manage your hosting services'}
-                        {activeTab === 'billing' && 'Payment history and upcoming invoices'}
-                        {activeTab === 'support' && 'Get help with your hosting services'}
-                        {activeTab === 'settings' && 'Configure your account preferences'}
-                    </p>
-                </header>
+            {/* Overlay for mobile sidebar */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-10 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
 
-                {renderTabContent()}
-            </div>
+            {/* Main content area */}
+            <main className="pt-16 lg:pl-64">
+                <div className="relative p-4 md:p-8">
+                    <header className="mb-8">
+                        <h1 className="text-2xl md:text-3xl font-bold text-white">
+                            {activeTab === 'dashboard' && 'Dashboard'}
+                            {activeTab === 'services' && 'Your Services'}
+                            {activeTab === 'billing' && 'Billing & Invoices'}
+                            {activeTab === 'support' && 'Support Tickets'}
+                            {activeTab === 'settings' && 'Account Settings'}
+                        </h1>
+                        <p className="text-gray-400 mt-1">
+                            {activeTab === 'dashboard' && 'Overview of your hosting account'}
+                            {activeTab === 'services' && 'Manage your hosting services'}
+                            {activeTab === 'billing' && 'Payment history and upcoming invoices'}
+                            {activeTab === 'support' && 'Get help with your hosting services'}
+                            {activeTab === 'settings' && 'Configure your account preferences'}
+                        </p>
+                    </header>
+
+                    {renderTabContent()}
+                </div>
+            </main>
         </div>
     );
 };
